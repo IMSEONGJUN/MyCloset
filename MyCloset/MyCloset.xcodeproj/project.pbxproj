@@ -42,6 +42,7 @@
 		15F9ABF323ECCA70007CD25B /* PinterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F9ABEF23ECCA70007CD25B /* PinterCell.swift */; };
 		15F9ABF423ECCA70007CD25B /* PinterLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F9ABF023ECCA70007CD25B /* PinterLayout.swift */; };
 		56A5D4CF1508EEBC5262F237 /* Pods_MyCloset.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2416F931B4423E5140A285EC /* Pods_MyCloset.framework */; };
+		CEA138032432041D0017FC10 /* CameraCustomViewController+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA138022432041D0017FC10 /* CameraCustomViewController+Ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -83,6 +84,7 @@
 		15F9ABEF23ECCA70007CD25B /* PinterCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinterCell.swift; sourceTree = "<group>"; };
 		15F9ABF023ECCA70007CD25B /* PinterLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinterLayout.swift; sourceTree = "<group>"; };
 		2416F931B4423E5140A285EC /* Pods_MyCloset.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyCloset.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEA138022432041D0017FC10 /* CameraCustomViewController+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraCustomViewController+Ext.swift"; sourceTree = "<group>"; };
 		DEB4A1A15580D189008B4E10 /* Pods-MyCloset.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyCloset.debug.xcconfig"; path = "Target Support Files/Pods-MyCloset/Pods-MyCloset.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -243,6 +245,7 @@
 			isa = PBXGroup;
 			children = (
 				155EE5F223E99C470016FB9F /* Extention.swift */,
+				CEA138022432041D0017FC10 /* CameraCustomViewController+Ext.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -397,6 +400,7 @@
 				15F9ABF423ECCA70007CD25B /* PinterLayout.swift in Sources */,
 				15F9ABEA23ECAFF4007CD25B /* SocksCell.swift in Sources */,
 				155EE5EB23E974C80016FB9F /* MyClosetModel.swift in Sources */,
+				CEA138032432041D0017FC10 /* CameraCustomViewController+Ext.swift in Sources */,
 				155EE5EF23E979560016FB9F /* ItemSettingModel.swift in Sources */,
 				155EE60823EC1A960016FB9F /* CameraCustomViewController.swift in Sources */,
 				15F9ABE423ECAF22007CD25B /* BottomCell.swift in Sources */,
