@@ -91,8 +91,8 @@ class AccCollectionViewCell: UICollectionViewCell {
         let accRef = storageRef.child("acc/")
         
         var fileCount = 1
-        var fileName = ""
-        var category: [UIImage] = []
+//        var fileName = ""
+//        var category: [UIImage] = []
         
         func setAccCell(num: Int) {
             accRef.child("acc"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in

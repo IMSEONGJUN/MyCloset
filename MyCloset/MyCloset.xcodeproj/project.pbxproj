@@ -14,8 +14,6 @@
 		155EE5E123E972CD0016FB9F /* PrevCodiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155EE5E023E972CD0016FB9F /* PrevCodiViewController.swift */; };
 		155EE5E723E972E70016FB9F /* MakeCodiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155EE5E623E972E70016FB9F /* MakeCodiViewController.swift */; };
 		155EE5EB23E974C80016FB9F /* MyClosetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155EE5EA23E974C80016FB9F /* MyClosetModel.swift */; };
-		155EE5ED23E9781C0016FB9F /* PrevCodiModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155EE5EC23E9781C0016FB9F /* PrevCodiModel.swift */; };
-		155EE5EF23E979560016FB9F /* ItemSettingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155EE5EE23E979560016FB9F /* ItemSettingModel.swift */; };
 		155EE5F123E992030016FB9F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 155EE5F023E992030016FB9F /* Assets.xcassets */; };
 		155EE5F323E99C470016FB9F /* Extention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155EE5F223E99C470016FB9F /* Extention.swift */; };
 		155EE5F723E9A7400016FB9F /* TutorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155EE5F623E9A7400016FB9F /* TutorialViewController.swift */; };
@@ -24,7 +22,6 @@
 		155EE60A23EC5C670016FB9F /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155EE60923EC5C670016FB9F /* DataManager.swift */; };
 		1578613E23E425D900284024 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1578613D23E425D900284024 /* AppDelegate.swift */; };
 		1578614023E425D900284024 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1578613F23E425D900284024 /* SceneDelegate.swift */; };
-		1578614223E425D900284024 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1578614123E425D900284024 /* ViewController.swift */; };
 		1578614523E425D900284024 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1578614323E425D900284024 /* Main.storyboard */; };
 		1578614D23E425DA00284024 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1578614B23E425DA00284024 /* LaunchScreen.storyboard */; };
 		15F9ABD923EC94EC007CD25B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 15F9ABD823EC94EC007CD25B /* GoogleService-Info.plist */; };
@@ -54,8 +51,6 @@
 		155EE5E023E972CD0016FB9F /* PrevCodiViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrevCodiViewController.swift; sourceTree = "<group>"; };
 		155EE5E623E972E70016FB9F /* MakeCodiViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakeCodiViewController.swift; sourceTree = "<group>"; };
 		155EE5EA23E974C80016FB9F /* MyClosetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyClosetModel.swift; sourceTree = "<group>"; };
-		155EE5EC23E9781C0016FB9F /* PrevCodiModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrevCodiModel.swift; sourceTree = "<group>"; };
-		155EE5EE23E979560016FB9F /* ItemSettingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemSettingModel.swift; sourceTree = "<group>"; };
 		155EE5F023E992030016FB9F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		155EE5F223E99C470016FB9F /* Extention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extention.swift; sourceTree = "<group>"; };
 		155EE5F623E9A7400016FB9F /* TutorialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialViewController.swift; sourceTree = "<group>"; };
@@ -65,7 +60,6 @@
 		1578613A23E425D900284024 /* MyCloset.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyCloset.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1578613D23E425D900284024 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1578613F23E425D900284024 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		1578614123E425D900284024 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		1578614423E425D900284024 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1578614C23E425DA00284024 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1578614E23E425DA00284024 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -133,7 +127,6 @@
 				1578614323E425D900284024 /* Main.storyboard */,
 				1578614B23E425DA00284024 /* LaunchScreen.storyboard */,
 				1578614E23E425DA00284024 /* Info.plist */,
-				1578614123E425D900284024 /* ViewController.swift */,
 			);
 			path = MyCloset;
 			sourceTree = "<group>";
@@ -218,8 +211,6 @@
 			isa = PBXGroup;
 			children = (
 				155EE5EA23E974C80016FB9F /* MyClosetModel.swift */,
-				155EE5EC23E9781C0016FB9F /* PrevCodiModel.swift */,
-				155EE5EE23E979560016FB9F /* ItemSettingModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -393,7 +384,6 @@
 				155EE5E123E972CD0016FB9F /* PrevCodiViewController.swift in Sources */,
 				155EE5D923E972A70016FB9F /* SignUpViewController.swift in Sources */,
 				15F9ABE023ECAE10007CD25B /* OuterCell.swift in Sources */,
-				1578614223E425D900284024 /* ViewController.swift in Sources */,
 				155EE60123EAD6300016FB9F /* MyClosetInnerCollectionViewCell.swift in Sources */,
 				15F9ABE623ECAF92007CD25B /* ShoesCell.swift in Sources */,
 				15F9ABF123ECCA70007CD25B /* TitleCell.swift in Sources */,
@@ -401,12 +391,10 @@
 				15F9ABEA23ECAFF4007CD25B /* SocksCell.swift in Sources */,
 				155EE5EB23E974C80016FB9F /* MyClosetModel.swift in Sources */,
 				CEA138032432041D0017FC10 /* CameraCustomViewController+Ext.swift in Sources */,
-				155EE5EF23E979560016FB9F /* ItemSettingModel.swift in Sources */,
 				155EE60823EC1A960016FB9F /* CameraCustomViewController.swift in Sources */,
 				15F9ABE423ECAF22007CD25B /* BottomCell.swift in Sources */,
 				1578613E23E425D900284024 /* AppDelegate.swift in Sources */,
 				15F9ABE823ECAFC6007CD25B /* BagCell.swift in Sources */,
-				155EE5ED23E9781C0016FB9F /* PrevCodiModel.swift in Sources */,
 				15F9ABE223ECAEBD007CD25B /* TopCell.swift in Sources */,
 				155EE5D623E972910016FB9F /* LoginViewController.swift in Sources */,
 				155EE5E723E972E70016FB9F /* MakeCodiViewController.swift in Sources */,

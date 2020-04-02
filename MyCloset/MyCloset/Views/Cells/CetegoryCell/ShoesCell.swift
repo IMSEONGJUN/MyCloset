@@ -90,8 +90,8 @@ class ShoesCell: UICollectionViewCell {
         let shoesRef = storageRef.child("shoes/")
         
         var fileCount = 1
-        var fileName = ""
-        var category: [UIImage] = []
+//        var fileName = ""
+//        var category: [UIImage] = []
         
         func setShoesCell(num: Int) {
             shoesRef.child("shoes"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in

@@ -92,8 +92,8 @@ class CapCell: UICollectionViewCell {
         let capRef = storageRef.child("cap/")
         
         var fileCount = 1
-        var fileName = ""
-        var category: [UIImage] = []
+//        var fileName = ""
+//        var category: [UIImage] = []
         
         func setCapCell(num: Int) {
             capRef.child("cap"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in

@@ -90,8 +90,8 @@ class TopCell: UICollectionViewCell {
         let topRef = storageRef.child("top/")
         
         var fileCount = 1
-        var fileName = ""
-        var category: [UIImage] = []
+//        var fileName = ""
+//        var category: [UIImage] = []
         
         func setTopCell(num: Int) {
             topRef.child("top"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in

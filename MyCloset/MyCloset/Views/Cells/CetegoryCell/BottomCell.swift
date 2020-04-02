@@ -90,8 +90,8 @@ class BottomCell: UICollectionViewCell {
         let bottomRef = storageRef.child("bottom/")
         
         var fileCount = 1
-        var fileName = ""
-        var category: [UIImage] = []
+//        var fileName = ""
+//        var category: [UIImage] = []
         
         func setBottomCell(num: Int) {
             bottomRef.child("bottom"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in

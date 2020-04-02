@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-protocol MyClosetViewControllerDelegate:class {
+protocol MyClosetViewControllerDelegate: class {
     func secondReloadRequest()
 }
 

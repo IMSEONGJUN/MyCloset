@@ -92,8 +92,8 @@ class BagCell: UICollectionViewCell {
         let bagRef = storageRef.child("bag/")
         
         var fileCount = 1
-        var fileName = ""
-        var category: [UIImage] = []
+//        var fileName = ""
+//        var category: [UIImage] = []
         
         func setBagCell(num: Int) {
             bagRef.child("bag"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in

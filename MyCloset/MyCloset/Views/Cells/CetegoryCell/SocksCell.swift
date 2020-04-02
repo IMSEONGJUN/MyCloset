@@ -89,8 +89,8 @@ class SocksCell: UICollectionViewCell {
         let socksRef = storageRef.child("socks/")
         
         var fileCount = 1
-        var fileName = ""
-        var category: [UIImage] = []
+//        var fileName = ""
+//        var category: [UIImage] = []
         
         func setSocksCell(num: Int) {
             socksRef.child("socks"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in
