@@ -11,7 +11,7 @@
 - User's closet management function
 - You can Check out the latest style images
 - You can check what's in my closet with the app
-- You can coordinate your own style
+- You can coordinate your own style and save it
 
 ## Deployment Target
 
