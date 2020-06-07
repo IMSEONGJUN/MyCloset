@@ -1,5 +1,5 @@
 # MyCloset
-
+>-First Hackathon project
 ## Concept
 ### Video Link : https://youtu.be/M63XVJaO8nk
 
@@ -16,3 +16,11 @@
 ## Deployment Target
 
 - iOS 13.2 or higher
+
+## Third party Libraries
+
+- Google Firebase
+- SnapKit
+
+## API Help
+- https://www.remove.bg/ko
