@@ -24,13 +24,7 @@ class DataManager {
     var top: Dictionary<String, UIImage> = [:]
     
     var selectedImageSet: [String:UIImage] = [:]
+    
+    var codiImages: [String:UIImage] = [:]
 }
 
-
-//class DataManager {
-//    static let shared = DataManager()
-//    private init() {
-//
-//    }
-//    var selectedImageSet: [String:UIImage] = [:]
-//}

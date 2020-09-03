@@ -12,8 +12,8 @@ import FirebaseStorage
 
 class AccCollectionViewCell: UICollectionViewCell {
     
-    
     static let identifier = "AccCell"
+    
     private let titleLabel = UILabel()
     var selectedIndexPath: [IndexPath] = []
     var isChecked = false
@@ -28,29 +28,31 @@ class AccCollectionViewCell: UICollectionViewCell {
         frame: self.contentView.frame, collectionViewLayout: flowLayout
     )
     
-    // MARK: Init
+    // MARK: - Initializer
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        setImageFromStorage()
-        
+        fetchImageFromStorage()
     }
     
     deinit {
         print("deinit")
     }
     
-    // MARK: Setup
     
+    // MARK: - Setup
     private func setupViews() {
         self.clipsToBounds = true
         //imageView
         setupFlowLayout()
-        
+        configureCollectionView()
+    }
+    
+    private func configureCollectionView() {
+        contentView.addSubview(collectionView)
         imageView.image = UIImage(named: "cellimage")
         collectionView.backgroundView = imageView
         collectionView.dataSource = self
@@ -58,8 +60,6 @@ class AccCollectionViewCell: UICollectionViewCell {
         collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
-        contentView.addSubview(collectionView)
-        
     }
     
     private func setupFlowLayout() {
@@ -71,10 +71,8 @@ class AccCollectionViewCell: UICollectionViewCell {
     }
     
     private func setupConstraints() {
-        
         collectionView.snp.makeConstraints {
-            $0.top.leading.trailing.bottom.equalToSuperview()
-            
+            $0.edges.equalToSuperview()
         }
     }
     
@@ -85,17 +83,14 @@ class AccCollectionViewCell: UICollectionViewCell {
     
     //MARK: Firebase Storage
     
-    func setImageFromStorage() {
+    func fetchImageFromStorage() {
         let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com").child("items/")
-        
         let accRef = storageRef.child("acc/")
         
         var fileCount = 1
-//        var fileName = ""
-//        var category: [UIImage] = []
         
         func setAccCell(num: Int) {
-            accRef.child("acc"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in
+            accRef.child("acc"+"\(num)"+".png").getData(maxSize: 1 * 520 * 520) { (data, error) in
                 if let err = error {
                     print(err)
                 } else {
@@ -134,34 +129,20 @@ class AccCollectionViewCell: UICollectionViewCell {
 
 
 extension AccCollectionViewCell: UICollectionViewDataSource {
-    
-    
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var itemCount: Int!
-        
-        itemCount = DataManager.shared.acc.count
-        
-        return itemCount
+        return DataManager.shared.acc.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell: UICollectionViewCell!
-        let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
-        
-        customCell.configure(image: DataManager.shared.acc["acc"+"\(indexPath.item)"])
-        print("acc reload")
-        
-        cell = customCell
-        cell.backgroundColor = .white
-        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier,
+                                                      for: indexPath) as! MyClosetInnerCollectionViewCell
+        cell.configure(image: DataManager.shared.acc["acc"+"\(indexPath.item)"])
         return cell
     }
 }
 
 extension AccCollectionViewCell: MyClosetViewControllerDelegate {
     func secondReloadRequest() {
-        print("Acc reloaded")
         self.collectionView.reloadData()
     }
 }
@@ -169,7 +150,7 @@ extension AccCollectionViewCell: MyClosetViewControllerDelegate {
 extension AccCollectionViewCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! MyClosetInnerCollectionViewCell
-        let seletedAccImage: UIImage = cell.imageView.image!
+        guard let seletedAccImage = cell.imageView.image else { return }
         DataManager.shared.selectedImageSet.updateValue(seletedAccImage, forKey: "acc")
     }
     

@@ -13,10 +13,13 @@ import FirebaseStorage
 
 class PrevCodiViewController: UIViewController {
     
+    // MARK: - Properties
     var prevCodiData: [String:UIImage] = [:]
     var collection: UICollectionView!
     let refreshControl = UIRefreshControl()
     
+    
+    // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -31,48 +34,13 @@ class PrevCodiViewController: UIViewController {
         
     }
     
-    @objc func reloadData() {
-        setImageFromStorage()
-        refreshControl.endRefreshing()
-    }
-    
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setImageFromStorage()
+        fetchImageFromStorage()
     }
     
     
-    func setImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com")
-        let codiRef = storageRef.child("codiSet/")
-        var fileCount = 0
-
-        codiRef.listAll { (StorageListResult, Error) in
-            if Error == nil {
-                fileCount = StorageListResult.items.count
-                for i in 1...fileCount {
-                    self.setCodiFile(ref: codiRef, num: i)
-                }
-            }
-        }
-    }
-    
-    
-    func setCodiFile(ref: StorageReference, num: Int) {
-        var imageFromServer = UIImage()
-        ref.child("codiSet"+"\(num)"+".jpeg").getData(maxSize: 1 * 1024 * 1024) { (data, error) in
-            if let err = error {
-                print(err)
-            } else {
-                imageFromServer = UIImage(data: data!)!
-                CodiSingleton.shared.codiImages.updateValue(imageFromServer, forKey: "codiSet"+"\(num)"+".jpeg")
-                self.prevCodiData = CodiSingleton.shared.codiImages
-                self.collection.reloadData()
-            }
-        }
-    }
-    
+    // MARK: - Initial Setup for UI
     private func configureCollection() {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 0
@@ -91,12 +59,52 @@ class PrevCodiViewController: UIViewController {
         view.addSubview(collection)
     }
     
+    
+    // MARK: - API Service
+    func fetchImageFromStorage() {
+        let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com")
+        let codiRef = storageRef.child("codiSet/")
+        var fileCount = 0
+
+        codiRef.listAll { (StorageListResult, Error) in
+            if Error == nil {
+                fileCount = StorageListResult.items.count
+                for i in 1...fileCount {
+                    self.setCodiFile(ref: codiRef, num: i)
+                }
+            }
+        }
+    }
+    
+    func setCodiFile(ref: StorageReference, num: Int) {
+        ref.child("codiSet"+"\(num)"+".jpeg").getData(maxSize: 1 * 1024 * 1024) { (data, error) in
+            if let err = error {
+                print(err)
+                return
+            }
+            
+            guard let imageFromServer = UIImage(data: data!) else { return }
+            DataManager.shared.codiImages.updateValue(imageFromServer, forKey: "codiSet"+"\(num)"+".jpeg")
+            self.prevCodiData = DataManager.shared.codiImages
+            self.collection.reloadData()
+        }
+    }
+    
+    
+    // MARK: - Action Handler
+    @objc func reloadData() {
+        fetchImageFromStorage()
+        refreshControl.endRefreshing()
+    }
+    
     @objc func pinchGesture(_ sender: UIPinchGestureRecognizer) {
         collection.transform = collection.transform.scaledBy(x: sender.scale, y: sender.scale)
         sender.scale = 1.0
     }
 }
 
+
+// MARK: - UICollectionViewDataSource
 extension PrevCodiViewController: UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.prevCodiData.count
@@ -104,8 +112,8 @@ extension PrevCodiViewController: UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CellID", for: indexPath)
-        guard !CodiSingleton.shared.codiImages.isEmpty else { return cell }
-        var imageArray: Array<UIImage> = []
+        guard !DataManager.shared.codiImages.isEmpty else { return cell }
+        var imageArray: [UIImage] = []
         for key in self.prevCodiData.sorted(by: {$0.0 > $1.0}) {
             imageArray.append(key.value)
         }

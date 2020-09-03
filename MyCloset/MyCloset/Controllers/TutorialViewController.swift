@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+
 class TutorialViewController: UIViewController {
     
     let scrollView = UIScrollView()

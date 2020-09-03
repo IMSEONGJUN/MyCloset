@@ -9,8 +9,9 @@
 import UIKit
 import SnapKit
 
-
 class MainScrollViewCell: UICollectionViewCell {
+    
+    // MARK: - Properties
     static let identifier = "MainScrollViewCell"
     
     let data = ["04","main21", "01", "02",  "03", "05"]
@@ -30,6 +31,8 @@ class MainScrollViewCell: UICollectionViewCell {
     let pageControlView = UIView()
     var pageControlViewWidthConst:NSLayoutConstraint!
     
+    
+    // MARK: - Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -40,27 +43,47 @@ class MainScrollViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    // MARK: - Initial Setup for UI
     private func configure() {
-        blurView.backgroundColor = .white
-        blurView.alpha = 0
-        
-        pageControlView.backgroundColor = .white
-        pageControlView.layer.cornerRadius = 3
-        pageControlView.alpha = 0.6
-        contentView.addSubview(scrollView)
-        
-        scrollView.delegate = self
-        scrollView.isPagingEnabled = true
-        scrollView.showsHorizontalScrollIndicator = false
-        
-        [imageView1,imageView2,imageView3,imageView4,imageView5,imageView6].forEach{scrollView.addSubview($0); $0.contentMode = .scaleAspectFill}
-        
-        scrollView.addSubview(pageControlView)
-        scrollView.bringSubviewToFront(pageControlView)
+        configureImageViews()
+        configurePageControlView()
+        configureBlurView()
+        configureScrollView()
+    }
+    
+    func configureImageViews() {
         imageViews = [imageView1,imageView2,imageView3,imageView4,imageView5,imageView6]
         for (idx,imgView) in imageViews.enumerated() {
             imgView.image = UIImage(named: data[idx])
         }
+        [imageView1,imageView2,imageView3,imageView4,imageView5,imageView6]
+        .forEach{
+            scrollView.addSubview($0)
+            $0.contentMode = .scaleAspectFill
+        }
+    }
+    
+    func configurePageControlView() {
+        pageControlView.backgroundColor = .white
+        pageControlView.layer.cornerRadius = 3
+        pageControlView.alpha = 0.6
+    }
+    
+    func configureBlurView() {
+        blurView.backgroundColor = .white
+        blurView.alpha = 0
+    }
+    
+    func configureScrollView() {
+        contentView.addSubview(scrollView)
+        scrollView.delegate = self
+        scrollView.isPagingEnabled = true
+        scrollView.showsHorizontalScrollIndicator = false
+        
+        scrollView.addSubview(pageControlView)
+        scrollView.bringSubviewToFront(pageControlView)
+        
         scrollView.addSubview(blurView)
     }
     
@@ -128,10 +151,10 @@ class MainScrollViewCell: UICollectionViewCell {
             $0.top.leading.trailing.bottom.equalToSuperview()
         }
     }
-    
-    
 }
 
+
+// MARK: - UIScrollViewDelegate
 extension MainScrollViewCell: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.x > scrollViewCurrentXOffset {
@@ -150,6 +173,8 @@ extension MainScrollViewCell: UIScrollViewDelegate {
     }
 }
 
+
+// MARK: - MainViewControllerDelegate
 extension MainScrollViewCell: MainViewControllerDelegate {
     func controlAlphaValue(XoffSet: CGFloat) {
         self.scrollView.bringSubviewToFront(blurView)

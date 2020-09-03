@@ -10,12 +10,15 @@ import UIKit
 
 class MyClosetInnerCollectionViewCell: UICollectionViewCell {
     
+    // MARK: - Properties
     static let identifier = "InnerCell"
-    let imageView = UIImageView()
     
+    let imageView = UIImageView()
     private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterialDark))
     private let checkMark = UIImageView(image: UIImage(systemName: "checkmark.circle.fill"))
     
+    
+    // MARK: - Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -25,19 +28,19 @@ class MyClosetInnerCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    // MARK: - Initial Setup
     private func setupViews() {
+        configureShadow()
+        contentView.backgroundColor = .white
         clipsToBounds = true
         layer.cornerRadius = 7
         layer.borderColor = UIColor.lightGray.cgColor
         layer.borderWidth = 1
         
-        self.layer.shadowRadius = 5.0
-        self.layer.shadowOpacity = 0.5
-        self.layer.shadowOffset = .zero
-        self.layer.shadowColor = UIColor.darkGray.cgColor
-        
         imageView.contentMode = .scaleAspectFit
         backgroundView = imageView
+        
         let selectedView = UIView()
         selectedBackgroundView = selectedView
         blurView.alpha = 0.5
@@ -45,6 +48,13 @@ class MyClosetInnerCollectionViewCell: UICollectionViewCell {
         [blurView, checkMark].forEach {
             selectedView.addSubview($0)
         }
+    }
+    
+    private func configureShadow() {
+        self.layer.shadowRadius = 5.0
+        self.layer.shadowOpacity = 0.5
+        self.layer.shadowOffset = .zero
+        self.layer.shadowColor = UIColor.darkGray.cgColor
     }
     
     override func layoutSubviews() {
@@ -55,7 +65,7 @@ class MyClosetInnerCollectionViewCell: UICollectionViewCell {
         selectedBackgroundView?.frame = bounds
     }
     
-    // MARK: Configure Cell
+    // MARK: - Configure Cell
     func configure(image: UIImage?) {
         imageView.image = image
     }

@@ -10,6 +10,8 @@ import UIKit
 
 class PinterCell: UICollectionViewCell {
     
+    
+    // MARK: - Properties
     static let identifier = "PinterCell"
     
     var image: UIImage! {
@@ -18,7 +20,7 @@ class PinterCell: UICollectionViewCell {
         }
     }
     
-    fileprivate let imageView: UIImageView = {
+    private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 8
@@ -26,14 +28,14 @@ class PinterCell: UICollectionViewCell {
         return imageView
     }()
     
-    fileprivate lazy var verticalStackView: UIStackView = {
+    private lazy var verticalStackView: UIStackView = {
        let stack = UIStackView(arrangedSubviews: [imageView, horizontalStackView])
         stack.axis = .vertical
         
         return stack
     }()
     
-    fileprivate lazy var horizontalStackView: UIStackView = {
+    private lazy var horizontalStackView: UIStackView = {
        let stack = UIStackView(arrangedSubviews: [label])
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
@@ -41,7 +43,7 @@ class PinterCell: UICollectionViewCell {
         return stack
     }()
     
-    fileprivate let label: UILabel = {
+    private let label: UILabel = {
        let label = UILabel()
         label.text = ""
         label.textColor = .darkGray
@@ -49,10 +51,10 @@ class PinterCell: UICollectionViewCell {
         return label
     }()
     
+    
+    // MARK: - Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        
         contentView.addSubview(verticalStackView)
         
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -64,12 +66,16 @@ class PinterCell: UICollectionViewCell {
         horizontalStackView.heightAnchor.constraint(equalToConstant: 10).isActive = true
     }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    // MARK: - LayoutSubviews
     override func layoutSubviews() {
         super.layoutSubviews()
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4))
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    
 }

@@ -15,14 +15,13 @@ protocol MainViewControllerDelegate: class {
     func controlAlphaValue(XoffSet: CGFloat)
 }
 
-
 class MainViewController: UIViewController {
     
     var collectionView: UICollectionView!
     
     weak var delegate: MainViewControllerDelegate?
     
-    var data: Array<String> = []
+    var data: [String] = []
     
     let weatherButton = UIButton()
     
@@ -109,7 +108,6 @@ extension MainViewController: UICollectionViewDataSource {
 
 extension MainViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("ddddd")
        guard indexPath.item != 0 && indexPath.item != 1 else {return}
         let dv = DetailViewController()
         dv.set(image: UIImage(named: self.data[indexPath.item - 2])!)

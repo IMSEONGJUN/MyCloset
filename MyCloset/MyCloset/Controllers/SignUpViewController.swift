@@ -56,8 +56,6 @@ class SignUpViewController: UIViewController {
         
         passwordTextField.placeholder = "비밀번호"
         passwordTextField.backgroundColor = UIColor(named: "TextFieldColor")
-        //        passwordTextField.layer.borderColor = UIColor.gray.cgColor
-        //        passwordTextField.layer.borderWidth = 1
         passwordTextField.layer.cornerRadius = 7
         let pwPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: passwordTextField.frame.height))
         passwordTextField.leftView = pwPaddingView

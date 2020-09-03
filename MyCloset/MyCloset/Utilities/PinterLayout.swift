@@ -8,13 +8,13 @@
 
 import UIKit
 
-
 protocol PinterLayoutDelegate: class {
     func collectionView(_ collectionView: UICollectionView, numberOfColumn: Int, heightForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat
 }
 
 class PinterLayout: UICollectionViewFlowLayout {
     
+    // MARK: - Properties
     weak var delegate: PinterLayoutDelegate!
     
     var cache = [UICollectionViewLayoutAttributes]()
@@ -22,6 +22,14 @@ class PinterLayout: UICollectionViewFlowLayout {
     private var initialYoffset:CGFloat = 0
     private var numberOfColumns = 0
     
+    private var contentHeight: CGFloat = 0
+    private var contentWidth: CGFloat {
+        guard let collectionView = collectionView else {return 0.0}
+        let insets = collectionView.contentInset
+        return collectionView.bounds.width - (insets.left + insets.right)
+    }
+    
+    // MARK: - Initialize
     override init() {
         super.init()
     }
@@ -36,31 +44,18 @@ class PinterLayout: UICollectionViewFlowLayout {
         fatalError("init(coder:) has not been implemented")
     }
     
-    fileprivate var contentHeight: CGFloat = 0
-    fileprivate var contentWidth: CGFloat {
-        guard let collectionView = collectionView else {return 0.0}
-        let insets = collectionView.contentInset
-        return collectionView.bounds.width - (insets.left + insets.right)
-    }
     
+    // MARK: - Overridden Method
     override var collectionViewContentSize: CGSize {
         return CGSize(width: contentWidth, height: contentHeight)
     }
     
     override func prepare() {
         guard let collection = collectionView else {return}
-        
         let columnWidth = contentWidth / CGFloat(numberOfColumns)
         
-        let scrollViewCellframe = CGRect(x: 0, y: 0, width: contentWidth, height: collection.bounds.height * 0.6)
-        let scrollViewCellAttributes = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: 0, section: 0))
-        scrollViewCellAttributes.frame = scrollViewCellframe
-        self.cache.append(scrollViewCellAttributes)
-        
-        let titleViewframe = CGRect(x: 0, y: collection.bounds.height * 0.6, width: contentWidth, height: collection.bounds.height * 0.1)
-        let attributes = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: 1, section: 0))
-        attributes.frame = titleViewframe
-        self.cache.append(attributes)
+        configureMainScrollView(collection: collection)
+        configureTitleView(collection: collection)
         
         var xOffset = [CGFloat]()
         var yOffset = [CGFloat](repeating: collection.bounds.height * 0.7, count: numberOfColumns)
@@ -82,7 +77,6 @@ class PinterLayout: UICollectionViewFlowLayout {
             attributes.frame = frame
             self.cache.append(attributes)
             
-        
             yOffset[columnToPlacePhoto] = yOffset[columnToPlacePhoto] + photoHeight
             
             columnToPlacePhoto = columnToPlacePhoto < (numberOfColumns - 1) ? (columnToPlacePhoto + 1) : 0
@@ -91,10 +85,25 @@ class PinterLayout: UICollectionViewFlowLayout {
             
             contentHeight = updatedContentHeight
         }
-
     }
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         return cache
+    }
+    
+    
+    // MARK: - Cell Attribute configuring Helper
+    private func configureMainScrollView(collection: UICollectionView) {
+        let scrollViewCellframe = CGRect(x: 0, y: 0, width: contentWidth, height: collection.bounds.height * 0.6)
+        let scrollViewCellAttributes = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: 0, section: 0))
+        scrollViewCellAttributes.frame = scrollViewCellframe
+        self.cache.append(scrollViewCellAttributes)
+    }
+    
+    private func configureTitleView(collection: UICollectionView) {
+        let titleViewframe = CGRect(x: 0, y: collection.bounds.height * 0.6, width: contentWidth, height: collection.bounds.height * 0.1)
+        let attributes = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: 1, section: 0))
+        attributes.frame = titleViewframe
+        self.cache.append(attributes)
     }
 }

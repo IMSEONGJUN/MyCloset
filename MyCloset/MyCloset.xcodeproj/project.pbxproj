@@ -39,6 +39,7 @@
 		15F9ABF323ECCA70007CD25B /* PinterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F9ABEF23ECCA70007CD25B /* PinterCell.swift */; };
 		15F9ABF423ECCA70007CD25B /* PinterLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F9ABF023ECCA70007CD25B /* PinterLayout.swift */; };
 		56A5D4CF1508EEBC5262F237 /* Pods_MyCloset.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2416F931B4423E5140A285EC /* Pods_MyCloset.framework */; };
+		CE38E3B12500F5C500C0A200 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE38E3B02500F5C500C0A200 /* APIManager.swift */; };
 		CEA138032432041D0017FC10 /* CameraCustomViewController+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA138022432041D0017FC10 /* CameraCustomViewController+Ext.swift */; };
 /* End PBXBuildFile section */
 
@@ -78,6 +79,7 @@
 		15F9ABEF23ECCA70007CD25B /* PinterCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinterCell.swift; sourceTree = "<group>"; };
 		15F9ABF023ECCA70007CD25B /* PinterLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinterLayout.swift; sourceTree = "<group>"; };
 		2416F931B4423E5140A285EC /* Pods_MyCloset.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyCloset.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE38E3B02500F5C500C0A200 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		CEA138022432041D0017FC10 /* CameraCustomViewController+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraCustomViewController+Ext.swift"; sourceTree = "<group>"; };
 		DEB4A1A15580D189008B4E10 /* Pods-MyCloset.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyCloset.debug.xcconfig"; path = "Target Support Files/Pods-MyCloset/Pods-MyCloset.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -219,6 +221,7 @@
 			isa = PBXGroup;
 			children = (
 				155EE60923EC5C670016FB9F /* DataManager.swift */,
+				CE38E3B02500F5C500C0A200 /* APIManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -380,6 +383,7 @@
 				155EE5DB23E972AF0016FB9F /* MainViewController.swift in Sources */,
 				15F9ABDC23ECAB3C007CD25B /* AccCollectionViewCell.swift in Sources */,
 				15F9ABF323ECCA70007CD25B /* PinterCell.swift in Sources */,
+				CE38E3B12500F5C500C0A200 /* APIManager.swift in Sources */,
 				155EE5F723E9A7400016FB9F /* TutorialViewController.swift in Sources */,
 				155EE5E123E972CD0016FB9F /* PrevCodiViewController.swift in Sources */,
 				155EE5D923E972A70016FB9F /* SignUpViewController.swift in Sources */,

@@ -10,12 +10,6 @@ import UIKit
 import Firebase
 import FirebaseStorage
 
-class CodiSingleton {
-    static let shared = CodiSingleton()
-    var codiImages: [String:UIImage] = [:]
-    private init(){}
-}
-
 class MakeCodiViewController: UIViewController {
     
     let containerImageView = UIImageView()
@@ -71,7 +65,13 @@ class MakeCodiViewController: UIViewController {
     private func setView() {
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.prefersLargeTitles = true
-        
+        configureMakeCodiButton()
+        configureCancelButton()
+        configureImageViews()
+    }
+    
+    private func configureMakeCodiButton() {
+        view.addSubview(makeCodiButton)
         makeCodiButton.setTitle("Make CodiSet", for: .normal)
         makeCodiButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
         makeCodiButton.setTitleColor(.white, for: .normal)
@@ -80,7 +80,10 @@ class MakeCodiViewController: UIViewController {
         makeCodiButton.shadow()
         makeCodiButton.clipsToBounds = true
         makeCodiButton.addTarget(self, action: #selector(didTapMakeButton), for: .touchUpInside)
-        
+    }
+    
+    private func configureCancelButton() {
+        view.addSubview(cancelButton)
         cancelButton.setTitle("Cancel", for: .normal)
         cancelButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
         cancelButton.backgroundColor = UIColor(named: "codiColor")
@@ -88,61 +91,21 @@ class MakeCodiViewController: UIViewController {
         cancelButton.shadow()
         cancelButton.clipsToBounds = true
         cancelButton.addTarget(self, action: #selector(didTapCancelButton), for: .touchUpInside)
-        
-        
-        view.addSubview(cancelButton)
-        view.addSubview(makeCodiButton)
-        
+    }
+    
+    private func configureImageViews() {
         imageViews = [capView,outerView,topView,bottomView,shoesView,bagView,accView,socksView]
         imageViews.forEach{containerImageView.addSubview($0)}
         imageViews.forEach{containerImageView.bringSubviewToFront($0)}
         imageViews.forEach{
             $0.backgroundColor = UIColor(named: "codiBackground")
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.contentMode = .scaleAspectFit}
+            $0.contentMode = .scaleAspectFit
         }
+    }
     
     private func configure() {
         view.addSubview(containerImageView)
         containerImageView.image = UIImage(named: "codiset")
-    }
-    
-    @objc func didTapMakeButton() {
-//        var fileNum = 0
-        let meta = StorageMetadata()
-        meta.contentType = "image/jpeg"
-        let image = containerImageView.asImage()
-        let data = image.jpegData(compressionQuality: 0.1)
-        
-        let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com")
-        let codiRef = storageRef.child("codiSet/")
-        
-        codiRef.listAll { (StorageListResult, Error) in
-            if Error == nil {
-                let fileNum = StorageListResult.items.count
-                codiRef.child("codiSet"+"\(fileNum + 1)"+".jpeg").putData(data!, metadata: meta) { (_, error) in
-                    if error == nil {
-                        print("코디셋 업로드 성공")
-                        let alert = UIAlertController(title: "Success", message: "코디가 저장되었습니다.", preferredStyle: .alert)
-                        let ok = UIAlertAction(title: "확인", style: .default) { (action) in
-                            self.dismiss(animated: true)
-                        }
-                        alert.addAction(ok)
-                        self.present(alert, animated: true)
-                    } else {
-                        let alert = UIAlertController(title: "Fail", message: "저장에 실패했습니다. 다시 시도해주세요.", preferredStyle: .alert)
-                        let ok = UIAlertAction(title: "확인", style: .cancel, handler: nil)
-                        alert.addAction(ok)
-                        self.present(alert, animated: true)
-                    }
-                }
-            }
-        }
-    }
-    
-    @objc func didTapCancelButton() {
-        DataManager.shared.selectedImageSet.removeAll()
-        self.dismiss(animated: true)
     }
     
     private func setConstraints() {
@@ -204,5 +167,24 @@ class MakeCodiViewController: UIViewController {
         accView.centerYAnchor.constraint(equalTo: containerImageView.centerYAnchor, constant: -35).isActive = true
         accView.widthAnchor.constraint(equalTo: containerImageView.widthAnchor, multiplier: 0.18).isActive = true
         accView.heightAnchor.constraint(equalTo: containerImageView.heightAnchor, multiplier: 0.15).isActive = true
+    }
+    
+    @objc private  func didTapMakeButton() {
+        let image = containerImageView.asImage()
+        guard let data = image.jpegData(compressionQuality: 0.1) else { return }
+        APIManager.shared.uploadCodiSet(data: data) { [weak self] error in
+            guard let self = self else { return }
+            if let error = error {
+                print(error)
+                self.presentAlert(title: "Fail", message: "저장에 실패했습니다. 다시 시도해주세요.")
+                return
+            }
+            self.presentAlert(title: "Success", message: "코디가 저장되었습니다.")
+        }
+    }
+    
+    @objc private func didTapCancelButton() {
+        DataManager.shared.selectedImageSet.removeAll()
+        self.dismiss(animated: true)
     }
 }
