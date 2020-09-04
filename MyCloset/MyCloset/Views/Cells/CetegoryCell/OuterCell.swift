@@ -36,7 +36,7 @@ class OuterCell: UICollectionViewCell {
         super.init(frame: frame)
         self.setupViews()
         self.setupConstraints()
-        setImageFromStorage()
+        fetchImageFromStorage()
     }
     
     deinit {
@@ -85,45 +85,37 @@ class OuterCell: UICollectionViewCell {
     
     //MARK: Firebase Storage
     
-    func setImageFromStorage() {
+    func fetchImageFromStorage() {
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        
         let outerRef = storageRef.child("outer/")
         
-        var fileCount = 0
-//        var fileName = ""
-//        var category: [UIImage] = []
+        outerRef.listAll { (storageListResult, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            let fileCount = storageListResult.items.count
+            self.outerFileCount = fileCount
+            print("outer file count", fileCount)
         
-        func setOuterCell(num: Int) {
-            outerRef.child("outer"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                if let err = error {
-                    print(err)
-                } else {
+            (0..<fileCount).forEach({
+                let num = $0
+                outerRef.child("outer"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                    if let err = error {
+                        print(err)
+                    }
+                    
                     self.imageFromServer = UIImage(data: data!)!
                     DataManager.shared.outer.updateValue(self.imageFromServer, forKey: "outer"+"\(num)")
-                    //                    self.acc.append(self.acc0)
                     
-                    //MARK: ViewDidLoad에서 여기로 바꿨음.
                     self.outerCompleteDownloadFile += 1
-                    
                     
                     if self.outerFileCount == self.outerCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
-            }
-        }
-        
-        outerRef.listAll { (StorageListResult, Error) in
-            
-            if Error == nil {
-                fileCount = StorageListResult.items.count
-                print("outer file count", fileCount)
-                self.outerFileCount = fileCount
-                for i in 0..<fileCount {
-                    setOuterCell(num: i)
-                }
-            }
+            })
         }
     }
     
@@ -132,27 +124,16 @@ class OuterCell: UICollectionViewCell {
 
 
 extension OuterCell: UICollectionViewDataSource {
-    
-    
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var itemCount: Int!
-        
-        itemCount = DataManager.shared.outer.count
-        
-        return itemCount
+        return DataManager.shared.outer.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell: UICollectionViewCell!
-        let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
         
-        customCell.configure(image: DataManager.shared.outer["outer"+"\(indexPath.item)"])
-        print("outer reload")
-        
-        cell = customCell
+        cell.configure(image: DataManager.shared.outer["outer"+"\(indexPath.item)"])
         cell.backgroundColor = .white
-        
+        print("outer reload")
         return cell
     }
 }

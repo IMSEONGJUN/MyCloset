@@ -37,7 +37,7 @@ class BottomCell: UICollectionViewCell {
         super.init(frame: frame)
         self.setupViews()
         self.setupConstraints()
-        setImageFromStorage()
+        fetchImageFromStorage()
     }
     
     deinit {
@@ -85,45 +85,37 @@ class BottomCell: UICollectionViewCell {
     
     //MARK: Firebase Storage
     
-    func setImageFromStorage() {
+    func fetchImageFromStorage() {
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        
         let bottomRef = storageRef.child("bottom/")
         
-        var fileCount = 0
-//        var fileName = ""
-//        var category: [UIImage] = []
+        bottomRef.listAll { (storageListResult, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            let fileCount = storageListResult.items.count
+            self.bottomFileCount = fileCount
+            print("bottom file count", fileCount)
         
-        func setBottomCell(num: Int) {
-            bottomRef.child("bottom"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                if let err = error {
-                    print(err)
-                } else {
+            (0..<fileCount).forEach({
+                let num = $0
+                bottomRef.child("bottom"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                    if let err = error {
+                        print(err)
+                    }
+                    
                     self.imageFromServer = UIImage(data: data!)!
                     DataManager.shared.bottom.updateValue(self.imageFromServer, forKey: "bottom"+"\(num)")
-                    //                    self.acc.append(self.acc0)
                     
-                    //MARK: ViewDidLoad에서 여기로 바꿨음.
                     self.bottomCompleteDownloadFile += 1
-                    
                     
                     if self.bottomFileCount == self.bottomCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
-            }
-        }
-        
-        bottomRef.listAll { (StorageListResult, Error) in
-            
-            if Error == nil {
-                fileCount = StorageListResult.items.count
-                print("bottom file count", fileCount)
-                self.bottomFileCount = fileCount
-                for i in 0..<fileCount {
-                    setBottomCell(num: i)
-                }
-            }
+            })
         }
     }
     
@@ -132,27 +124,16 @@ class BottomCell: UICollectionViewCell {
 
 
 extension BottomCell: UICollectionViewDataSource {
-    
-    
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var itemCount: Int!
-        
-        itemCount = DataManager.shared.bottom.count
-        
-        return itemCount
+        return DataManager.shared.bottom.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell: UICollectionViewCell!
-        let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
         
-        customCell.configure(image: DataManager.shared.bottom["bottom"+"\(indexPath.item)"])
-        print("bottom reload")
-        
-        cell = customCell
+        cell.configure(image: DataManager.shared.bottom["bottom"+"\(indexPath.item)"])
         cell.backgroundColor = .white
-        
+        print("bottom reload")
         return cell
     }
 }

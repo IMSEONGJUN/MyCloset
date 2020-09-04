@@ -36,7 +36,7 @@ class ShoesCell: UICollectionViewCell {
         super.init(frame: frame)
         self.setupViews()
         self.setupConstraints()
-        setImageFromStorage()
+        fetchImageFromStorage()
     }
     
     deinit {
@@ -85,45 +85,37 @@ class ShoesCell: UICollectionViewCell {
     
     //MARK: Firebase Storage
     
-    func setImageFromStorage() {
+    func fetchImageFromStorage() {
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        
         let shoesRef = storageRef.child("shoes/")
         
-        var fileCount = 0
-//        var fileName = ""
-//        var category: [UIImage] = []
+        shoesRef.listAll { (storageListResult, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            let fileCount = storageListResult.items.count
+            self.shoesFileCount = fileCount
+            print("shoes file count", fileCount)
         
-        func setShoesCell(num: Int) {
-            shoesRef.child("shoes"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                if let err = error {
-                    print(err)
-                } else {
+            (0..<fileCount).forEach({
+                let num = $0
+                shoesRef.child("shoes"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                    if let err = error {
+                        print(err)
+                    }
+                    
                     self.imageFromServer = UIImage(data: data!)!
                     DataManager.shared.shoes.updateValue(self.imageFromServer, forKey: "shoes"+"\(num)")
-                    //                    self.acc.append(self.acc0)
                     
-                    //MARK: ViewDidLoad에서 여기로 바꿨음.
                     self.shoesCompleteDownloadFile += 1
-                    
                     
                     if self.shoesFileCount == self.shoesCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
-            }
-        }
-        
-        shoesRef.listAll { (StorageListResult, Error) in
-            
-            if Error == nil {
-                fileCount = StorageListResult.items.count
-                print("shoes file count", fileCount)
-                self.shoesFileCount = fileCount
-                for i in 0..<fileCount {
-                    setShoesCell(num: i)
-                }
-            }
+            })
         }
     }
     
@@ -132,27 +124,16 @@ class ShoesCell: UICollectionViewCell {
 
 
 extension ShoesCell: UICollectionViewDataSource {
-    
-    
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var itemCount: Int!
-        
-        itemCount = DataManager.shared.shoes.count
-        
-        return itemCount
+   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return DataManager.shared.shoes.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell: UICollectionViewCell!
-        let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
         
-        customCell.configure(image: DataManager.shared.shoes["shoes"+"\(indexPath.item)"])
-        print("shoes reload")
-        
-        cell = customCell
+        cell.configure(image: DataManager.shared.shoes["shoes"+"\(indexPath.item)"])
         cell.backgroundColor = .white
-        
+        print("shoes reload")
         return cell
     }
 }

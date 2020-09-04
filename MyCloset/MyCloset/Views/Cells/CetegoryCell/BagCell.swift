@@ -36,7 +36,7 @@ class BagCell: UICollectionViewCell {
         super.init(frame: frame)
         self.setupViews()
         self.setupConstraints()
-        setImageFromStorage()
+        fetchImageFromStorage()
     }
     
     deinit {
@@ -87,45 +87,37 @@ class BagCell: UICollectionViewCell {
     
     //MARK: Firebase Storage
     
-    func setImageFromStorage() {
+    func fetchImageFromStorage() {
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        
         let bagRef = storageRef.child("bag/")
         
-        var fileCount = 0
-//        var fileName = ""
-//        var category: [UIImage] = []
+        bagRef.listAll { (storageListResult, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            let fileCount = storageListResult.items.count
+            self.bagFileCount = fileCount
+            print("bag file count", fileCount)
         
-        func setBagCell(num: Int) {
-            bagRef.child("bag"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                if let err = error {
-                    print(err)
-                } else {
+            (0..<fileCount).forEach({
+                let num = $0
+                bagRef.child("bag"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                    if let err = error {
+                        print(err)
+                    }
+                    
                     self.imageFromServer = UIImage(data: data!)!
                     DataManager.shared.bag.updateValue(self.imageFromServer, forKey: "bag"+"\(num)")
-                    //                    self.acc.append(self.acc0)
                     
-                    //MARK: ViewDidLoad에서 여기로 바꿨음.
                     self.bagCompleteDownloadFile += 1
-                    
                     
                     if self.bagFileCount == self.bagCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
-            }
-        }
-        
-        bagRef.listAll { (StorageListResult, Error) in
-            
-            if Error == nil {
-                fileCount = StorageListResult.items.count
-                print("bag file count", fileCount)
-                self.bagFileCount = fileCount
-                for i in 0..<fileCount {
-                    setBagCell(num: i)
-                }
-            }
+            })
         }
     }
     
@@ -134,27 +126,16 @@ class BagCell: UICollectionViewCell {
 
 
 extension BagCell: UICollectionViewDataSource {
-    
-    
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var itemCount: Int!
-        
-        itemCount = DataManager.shared.bag.count
-        
-        return itemCount
+        return DataManager.shared.bag.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell: UICollectionViewCell!
-        let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
         
-        customCell.configure(image: DataManager.shared.bag["bag"+"\(indexPath.item)"])
-        print("bag reload")
-        
-        cell = customCell
+        cell.configure(image: DataManager.shared.bag["bag"+"\(indexPath.item)"])
         cell.backgroundColor = .white
-        
+        print("bag reload")
         return cell
     }
 }

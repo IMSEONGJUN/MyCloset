@@ -90,35 +90,33 @@ class AccCollectionViewCell: UICollectionViewCell {
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
         let accRef = storageRef.child("acc/")
         
-        var fileCount = 0
-        accRef.listAll { (StorageListResult, Error) in
-            
-            if Error == nil {
-                fileCount = StorageListResult.items.count
-                print("acc file count", fileCount)
-                self.accFileCount = fileCount
-                for i in 0..<fileCount {
-                    setAccCell(num: i)
-                }
+        accRef.listAll { (storageListResult, error) in
+            if let error = error {
+                print(error)
+                return
             }
-        }
-        func setAccCell(num: Int) {
-            accRef.child("acc"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                if let err = error {
-                    print(err)
-                } else {
+            
+            let fileCount = storageListResult.items.count
+            self.accFileCount = fileCount
+            print("acc file count", fileCount)
+        
+            (0..<fileCount).forEach({
+                let num = $0
+                accRef.child("acc"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                    if let err = error {
+                        print(err)
+                    }
+                    
                     self.imageFromServer = UIImage(data: data!)!
                     DataManager.shared.acc.updateValue(self.imageFromServer, forKey: "acc"+"\(num)")
-                    //                    self.acc.append(self.acc0)
                     
                     self.accCompleteDownloadFile += 1
-                    
                     
                     if self.accFileCount == self.accCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
-            }
+            })
         }
     }
     

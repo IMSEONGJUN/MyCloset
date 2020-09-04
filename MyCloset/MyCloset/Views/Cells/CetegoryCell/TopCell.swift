@@ -37,7 +37,7 @@ class TopCell: UICollectionViewCell {
         super.init(frame: frame)
         self.setupViews()
         self.setupConstraints()
-        setImageFromStorage()
+        fetchImageFromStorage()
     }
     
     deinit {
@@ -85,72 +85,53 @@ class TopCell: UICollectionViewCell {
     
     //MARK: Firebase Storage
     
-    func setImageFromStorage() {
+    func fetchImageFromStorage() {
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        
         let topRef = storageRef.child("top/")
         
-        var fileCount = 0
+        topRef.listAll { (storageListResult, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            let fileCount = storageListResult.items.count
+            self.topFileCount = fileCount
+            print("top file count", fileCount)
         
-        func setTopCell(num: Int) {
-            topRef.child("top"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                if let err = error {
-                    print(err)
-                } else {
+            (0..<fileCount).forEach({
+                let num = $0
+                topRef.child("top"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                    if let err = error {
+                        print(err)
+                    }
+                    
                     self.imageFromServer = UIImage(data: data!)!
                     DataManager.shared.top.updateValue(self.imageFromServer, forKey: "top"+"\(num)")
-                    //                    self.acc.append(self.acc0)
                     
-                    //MARK: ViewDidLoad에서 여기로 바꿨음.
                     self.topCompleteDownloadFile += 1
-                    
                     
                     if self.topFileCount == self.topCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
-            }
-        }
-        
-        topRef.listAll { (StorageListResult, Error) in
-            
-            if Error == nil {
-                fileCount = StorageListResult.items.count
-                print("top file count", fileCount)
-                self.topFileCount = fileCount
-                for i in 0..<fileCount {
-                    setTopCell(num: i)
-                }
-            }
+            })
         }
     }
-    
 }
 
 
 
 extension TopCell: UICollectionViewDataSource {
-    
-    
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var itemCount: Int!
-        
-        itemCount = DataManager.shared.top.count
-        
-        return itemCount
+        return DataManager.shared.top.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell: UICollectionViewCell!
-        let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
-        
-        customCell.configure(image: DataManager.shared.top["top"+"\(indexPath.item)"])
-        print("top reload")
-        
-        cell = customCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
+        cell.configure(image: DataManager.shared.top["top"+"\(indexPath.item)"])
         cell.backgroundColor = .white
-        
+        print("top reload")
         return cell
     }
 }

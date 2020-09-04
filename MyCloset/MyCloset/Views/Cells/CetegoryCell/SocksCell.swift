@@ -36,7 +36,7 @@ class SocksCell: UICollectionViewCell {
         super.init(frame: frame)
         self.setupViews()
         self.setupConstraints()
-        setImageFromStorage()
+        fetchImageFromStorage()
     }
     
     deinit {
@@ -84,45 +84,37 @@ class SocksCell: UICollectionViewCell {
     
     //MARK: Firebase Storage
     
-    func setImageFromStorage() {
+    func fetchImageFromStorage() {
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        
         let socksRef = storageRef.child("socks/")
         
-        var fileCount = 0
-//        var fileName = ""
-//        var category: [UIImage] = []
+        socksRef.listAll { (storageListResult, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            let fileCount = storageListResult.items.count
+            self.socksFileCount = fileCount
+            print("socks file count", fileCount)
         
-        func setSocksCell(num: Int) {
-            socksRef.child("socks"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                if let err = error {
-                    print(err)
-                } else {
+            (0..<fileCount).forEach({
+                let num = $0
+                socksRef.child("socks"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                    if let err = error {
+                        print(err)
+                    }
+                    
                     self.imageFromServer = UIImage(data: data!)!
                     DataManager.shared.socks.updateValue(self.imageFromServer, forKey: "socks"+"\(num)")
-                    //                    self.acc.append(self.acc0)
                     
-                    //MARK: ViewDidLoad에서 여기로 바꿨음.
                     self.socksCompleteDownloadFile += 1
-                    
                     
                     if self.socksFileCount == self.socksCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
-            }
-        }
-        
-        socksRef.listAll { (StorageListResult, Error) in
-            
-            if Error == nil {
-                fileCount = StorageListResult.items.count
-                print("socks file count", fileCount)
-                self.socksFileCount = fileCount
-                for i in 0..<fileCount {
-                    setSocksCell(num: i)
-                }
-            }
+            })
         }
     }
     
@@ -131,27 +123,16 @@ class SocksCell: UICollectionViewCell {
 
 
 extension SocksCell: UICollectionViewDataSource {
-    
-    
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var itemCount: Int!
-        
-        itemCount = DataManager.shared.socks.count
-        
-        return itemCount
+        return DataManager.shared.socks.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell: UICollectionViewCell!
-        let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
         
-        customCell.configure(image: DataManager.shared.socks["socks"+"\(indexPath.item)"])
-        print("socks reload")
-        
-        cell = customCell
+        cell.configure(image: DataManager.shared.socks["socks"+"\(indexPath.item)"])
         cell.backgroundColor = .white
-        
+        print("socks reload")
         return cell
     }
 }
