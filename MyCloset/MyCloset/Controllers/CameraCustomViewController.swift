@@ -213,7 +213,7 @@ class CameraCustomViewController: UIViewController, AVCapturePhotoCaptureDelegat
             parameters: ["image_url": url], //firebase storage file URL
             encoding: URLEncoding(),
             headers: [
-                "X-Api-Key": "vSGcwwowucw4kTKHwjJ4JxWz"
+                "X-Api-Key": "iAX5QbYg4xMHpQV43QNRiRC9"
             ])
           .responseData { imageResponse in
                 guard let imageData = imageResponse.data,

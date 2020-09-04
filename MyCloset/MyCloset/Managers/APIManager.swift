@@ -60,7 +60,7 @@ class APIManager {
     func uploadCodiSet(data: Data, completion: @escaping (Error?) -> Void) {
         let meta = StorageMetadata()
         meta.contentType = "image/jpeg"
-        let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com")
+        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com")
         let codiRef = storageRef.child("codiSet/")
         
         codiRef.listAll { (StorageListResult, Error) in

@@ -34,7 +34,8 @@ class OuterCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        self.setupViews()
+        self.setupConstraints()
         setImageFromStorage()
     }
     
@@ -51,7 +52,7 @@ class OuterCell: UICollectionViewCell {
         imageView.image = UIImage(named: "cellimage")
         collectionView.backgroundView = imageView
         setupFlowLayout()
-        
+        collectionView.alwaysBounceHorizontal = true
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
@@ -85,16 +86,16 @@ class OuterCell: UICollectionViewCell {
     //MARK: Firebase Storage
     
     func setImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com").child("items/")
+        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
         
         let outerRef = storageRef.child("outer/")
         
-        var fileCount = 1
+        var fileCount = 0
 //        var fileName = ""
 //        var category: [UIImage] = []
         
         func setOuterCell(num: Int) {
-            outerRef.child("outer"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in
+            outerRef.child("outer"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
                 if let err = error {
                     print(err)
                 } else {
@@ -105,10 +106,8 @@ class OuterCell: UICollectionViewCell {
                     //MARK: ViewDidLoad에서 여기로 바꿨음.
                     self.outerCompleteDownloadFile += 1
                     
-                    if num == 0 {
-                        self.setupViews()
-                        self.setupConstraints()
-                    } else if self.outerFileCount == self.outerCompleteDownloadFile {
+                    
+                    if self.outerFileCount == self.outerCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
@@ -121,7 +120,7 @@ class OuterCell: UICollectionViewCell {
                 fileCount = StorageListResult.items.count
                 print("outer file count", fileCount)
                 self.outerFileCount = fileCount
-                for i in 0...(fileCount-1) {
+                for i in 0..<fileCount {
                     setOuterCell(num: i)
                 }
             }

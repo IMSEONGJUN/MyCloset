@@ -32,7 +32,7 @@ class MyClosetInnerCollectionViewCell: UICollectionViewCell {
     // MARK: - Initial Setup
     private func setupViews() {
         configureShadow()
-        contentView.backgroundColor = .white
+        backgroundColor = .white
         clipsToBounds = true
         layer.cornerRadius = 7
         layer.borderColor = UIColor.lightGray.cgColor
@@ -40,6 +40,9 @@ class MyClosetInnerCollectionViewCell: UICollectionViewCell {
         
         imageView.contentMode = .scaleAspectFit
         backgroundView = imageView
+        imageView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
         
         let selectedView = UIView()
         selectedBackgroundView = selectedView

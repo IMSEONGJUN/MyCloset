@@ -35,7 +35,8 @@ class TopCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        self.setupViews()
+        self.setupConstraints()
         setImageFromStorage()
     }
     
@@ -57,7 +58,7 @@ class TopCell: UICollectionViewCell {
         collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
-        
+        collectionView.alwaysBounceHorizontal = true
         contentView.addSubview(collectionView)
         
     }
@@ -85,16 +86,14 @@ class TopCell: UICollectionViewCell {
     //MARK: Firebase Storage
     
     func setImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com").child("items/")
+        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
         
         let topRef = storageRef.child("top/")
         
-        var fileCount = 1
-//        var fileName = ""
-//        var category: [UIImage] = []
+        var fileCount = 0
         
         func setTopCell(num: Int) {
-            topRef.child("top"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in
+            topRef.child("top"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
                 if let err = error {
                     print(err)
                 } else {
@@ -105,10 +104,8 @@ class TopCell: UICollectionViewCell {
                     //MARK: ViewDidLoad에서 여기로 바꿨음.
                     self.topCompleteDownloadFile += 1
                     
-                    if num == 0 {
-                        self.setupViews()
-                        self.setupConstraints()
-                    } else if self.topFileCount == self.topCompleteDownloadFile {
+                    
+                    if self.topFileCount == self.topCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
@@ -121,7 +118,7 @@ class TopCell: UICollectionViewCell {
                 fileCount = StorageListResult.items.count
                 print("top file count", fileCount)
                 self.topFileCount = fileCount
-                for i in 0...(fileCount-1) {
+                for i in 0..<fileCount {
                     setTopCell(num: i)
                 }
             }

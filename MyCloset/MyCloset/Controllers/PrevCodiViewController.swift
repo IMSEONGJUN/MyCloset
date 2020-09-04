@@ -62,13 +62,16 @@ class PrevCodiViewController: UIViewController {
     
     // MARK: - API Service
     func fetchImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com")
+        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com")
         let codiRef = storageRef.child("codiSet/")
         var fileCount = 0
 
         codiRef.listAll { (StorageListResult, Error) in
             if Error == nil {
                 fileCount = StorageListResult.items.count
+                guard fileCount > 0 else {
+                    return
+                }
                 for i in 1...fileCount {
                     self.setCodiFile(ref: codiRef, num: i)
                 }

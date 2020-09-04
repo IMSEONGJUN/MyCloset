@@ -37,7 +37,8 @@ class CapCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        self.setupViews()
+        self.setupConstraints()
         setImageFromStorage()
     }
     
@@ -59,7 +60,7 @@ class CapCell: UICollectionViewCell {
         collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
-        
+        collectionView.alwaysBounceHorizontal = true
         contentView.addSubview(collectionView)
         
     }
@@ -87,32 +88,23 @@ class CapCell: UICollectionViewCell {
     //MARK: Firebase Storage
     
     func setImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com").child("items/")
-        
+        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
         let capRef = storageRef.child("cap/")
-        
-        var fileCount = 1
-//        var fileName = ""
-//        var category: [UIImage] = []
+        var fileCount = 0
         
         func setCapCell(num: Int) {
-            capRef.child("cap"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in
+            capRef.child("cap"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
                 if let err = error {
                     print(err)
-                } else {
-                    self.imageFromServer = UIImage(data: data!)!
-                    DataManager.shared.cap.updateValue(self.imageFromServer, forKey: "cap"+"\(num)")
-                    //                    self.cap.append(self.cap0)
-                    
-                    //MARK: ViewDidLoad에서 여기로 바꿨음.
-                    self.capCompleteDownloadFile += 1
-                    
-                    if num == 0 {
-                        self.setupViews()
-                        self.setupConstraints()
-                    } else if self.capFileCount == self.capCompleteDownloadFile {
-                        self.collectionView.reloadData()
-                    }
+                    return
+                }
+                self.imageFromServer = UIImage(data: data!)!
+                DataManager.shared.cap.updateValue(self.imageFromServer, forKey: "cap"+"\(num)")
+               
+                self.capCompleteDownloadFile += 1
+                
+                if self.capFileCount == self.capCompleteDownloadFile {
+                    self.collectionView.reloadData()
                 }
             }
         }
@@ -123,7 +115,7 @@ class CapCell: UICollectionViewCell {
                 fileCount = StorageListResult.items.count
                 print("cap file count", fileCount)
                 self.capFileCount = fileCount
-                for i in 0...(fileCount-1) {
+                for i in 0..<fileCount {
                     setCapCell(num: i)
                 }
             }
@@ -172,6 +164,8 @@ extension CapCell: UICollectionViewDelegate {
         let cell = collectionView.cellForItem(at: indexPath) as! MyClosetInnerCollectionViewCell
         let seletedCapImage: UIImage = cell.imageView.image!
         DataManager.shared.selectedImageSet.updateValue(seletedCapImage, forKey: "cap")
+        print("after setting cap item")
+        print(DataManager.shared.selectedImageSet["cap"])
     }
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         DataManager.shared.selectedImageSet.removeValue(forKey: "cap")

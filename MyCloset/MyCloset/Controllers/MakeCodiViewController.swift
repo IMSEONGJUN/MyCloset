@@ -33,9 +33,9 @@ class MakeCodiViewController: UIViewController {
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        distributeImages()
-        setView()
+//        distributeImages()
         configure()
+        setView()
         setConstraints()
     }
     
@@ -46,7 +46,9 @@ class MakeCodiViewController: UIViewController {
         for key in keys {
             switch key {
             case "cap":
+                print("cap")
                 self.capView.image = DataManager.shared.selectedImageSet[key]
+                print(self.capView.image)
             case "outer":
                 self.outerView.image = DataManager.shared.selectedImageSet[key]
             case "top":
@@ -105,7 +107,8 @@ class MakeCodiViewController: UIViewController {
         imageViews.forEach{containerImageView.addSubview($0)}
         imageViews.forEach{containerImageView.bringSubviewToFront($0)}
         imageViews.forEach{
-            $0.backgroundColor = UIColor(named: "codiBackground")
+//            $0.backgroundColor = UIColor(named: "codiBackground")
+            $0.backgroundColor = .white
             $0.contentMode = .scaleAspectFit
         }
     }

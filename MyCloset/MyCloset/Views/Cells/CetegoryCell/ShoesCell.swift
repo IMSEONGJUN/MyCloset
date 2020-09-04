@@ -34,7 +34,8 @@ class ShoesCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        self.setupViews()
+        self.setupConstraints()
         setImageFromStorage()
     }
     
@@ -57,7 +58,7 @@ class ShoesCell: UICollectionViewCell {
         collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
-        
+        collectionView.alwaysBounceHorizontal = true
         contentView.addSubview(collectionView)
         
     }
@@ -85,16 +86,16 @@ class ShoesCell: UICollectionViewCell {
     //MARK: Firebase Storage
     
     func setImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com").child("items/")
+        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
         
         let shoesRef = storageRef.child("shoes/")
         
-        var fileCount = 1
+        var fileCount = 0
 //        var fileName = ""
 //        var category: [UIImage] = []
         
         func setShoesCell(num: Int) {
-            shoesRef.child("shoes"+"\(num)"+".png").getData(maxSize: 1 * 1024 * 1024) { (data, error) in
+            shoesRef.child("shoes"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
                 if let err = error {
                     print(err)
                 } else {
@@ -105,10 +106,8 @@ class ShoesCell: UICollectionViewCell {
                     //MARK: ViewDidLoad에서 여기로 바꿨음.
                     self.shoesCompleteDownloadFile += 1
                     
-                    if num == 0 {
-                        self.setupViews()
-                        self.setupConstraints()
-                    } else if self.shoesFileCount == self.shoesCompleteDownloadFile {
+                    
+                    if self.shoesFileCount == self.shoesCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
@@ -121,7 +120,7 @@ class ShoesCell: UICollectionViewCell {
                 fileCount = StorageListResult.items.count
                 print("shoes file count", fileCount)
                 self.shoesFileCount = fileCount
-                for i in 0...(fileCount-1) {
+                for i in 0..<fileCount {
                     setShoesCell(num: i)
                 }
             }

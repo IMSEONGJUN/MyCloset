@@ -35,6 +35,8 @@ class AccCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.setupViews()
+        self.setupConstraints()
         fetchImageFromStorage()
     }
     
@@ -59,6 +61,7 @@ class AccCollectionViewCell: UICollectionViewCell {
         collectionView.delegate = self
         collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
+        collectionView.alwaysBounceHorizontal = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
     }
     
@@ -84,23 +87,23 @@ class AccCollectionViewCell: UICollectionViewCell {
     //MARK: Firebase Storage
     
     func fetchImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://thirdcloset-735f9.appspot.com").child("items/")
+        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
         let accRef = storageRef.child("acc/")
         
-        var fileCount = 1
+        var fileCount = 0
         accRef.listAll { (StorageListResult, Error) in
             
             if Error == nil {
                 fileCount = StorageListResult.items.count
                 print("acc file count", fileCount)
                 self.accFileCount = fileCount
-                for i in 0...(fileCount-1) {
+                for i in 0..<fileCount {
                     setAccCell(num: i)
                 }
             }
         }
         func setAccCell(num: Int) {
-            accRef.child("acc"+"\(num)"+".png").getData(maxSize: 1 * 520 * 520) { (data, error) in
+            accRef.child("acc"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
                 if let err = error {
                     print(err)
                 } else {
@@ -110,10 +113,8 @@ class AccCollectionViewCell: UICollectionViewCell {
                     
                     self.accCompleteDownloadFile += 1
                     
-                    if num == 0 {
-                        self.setupViews()
-                        self.setupConstraints()
-                    } else if self.accFileCount == self.accCompleteDownloadFile {
+                    
+                    if self.accFileCount == self.accCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
                 }
@@ -147,6 +148,7 @@ extension AccCollectionViewCell: MyClosetViewControllerDelegate {
 extension AccCollectionViewCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! MyClosetInnerCollectionViewCell
+        
         guard let seletedAccImage = cell.imageView.image else { return }
         DataManager.shared.selectedImageSet.updateValue(seletedAccImage, forKey: "acc")
     }
