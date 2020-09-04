@@ -169,13 +169,13 @@
 			isa = PBXGroup;
 			children = (
 				155EE5D523E972910016FB9F /* LoginViewController.swift */,
-				155EE5F623E9A7400016FB9F /* TutorialViewController.swift */,
 				155EE5D823E972A70016FB9F /* SignUpViewController.swift */,
 				155EE5DA23E972AF0016FB9F /* MainViewController.swift */,
 				15F9ABEB23ECCA0A007CD25B /* DetailViewController.swift */,
 				155EE5DE23E972C30016FB9F /* MyClosetViewController.swift */,
 				155EE60723EC1A960016FB9F /* CameraCustomViewController.swift */,
 				155EE5E623E972E70016FB9F /* MakeCodiViewController.swift */,
+				155EE5F623E9A7400016FB9F /* TutorialViewController.swift */,
 				155EE5E023E972CD0016FB9F /* PrevCodiViewController.swift */,
 			);
 			path = Controllers;

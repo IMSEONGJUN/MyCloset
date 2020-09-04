@@ -88,7 +88,17 @@ class AccCollectionViewCell: UICollectionViewCell {
         let accRef = storageRef.child("acc/")
         
         var fileCount = 1
-        
+        accRef.listAll { (StorageListResult, Error) in
+            
+            if Error == nil {
+                fileCount = StorageListResult.items.count
+                print("acc file count", fileCount)
+                self.accFileCount = fileCount
+                for i in 0...(fileCount-1) {
+                    setAccCell(num: i)
+                }
+            }
+        }
         func setAccCell(num: Int) {
             accRef.child("acc"+"\(num)"+".png").getData(maxSize: 1 * 520 * 520) { (data, error) in
                 if let err = error {
@@ -98,7 +108,6 @@ class AccCollectionViewCell: UICollectionViewCell {
                     DataManager.shared.acc.updateValue(self.imageFromServer, forKey: "acc"+"\(num)")
                     //                    self.acc.append(self.acc0)
                     
-                    //MARK: ViewDidLoad에서 여기로 바꿨음.
                     self.accCompleteDownloadFile += 1
                     
                     if num == 0 {
@@ -107,18 +116,6 @@ class AccCollectionViewCell: UICollectionViewCell {
                     } else if self.accFileCount == self.accCompleteDownloadFile {
                         self.collectionView.reloadData()
                     }
-                }
-            }
-        }
-        
-        accRef.listAll { (StorageListResult, Error) in
-            
-            if Error == nil {
-                fileCount = StorageListResult.items.count
-                print("acc file count", fileCount)
-                self.accFileCount = fileCount
-                for i in 0...(fileCount-1) {
-                    setAccCell(num: i)
                 }
             }
         }

@@ -7,13 +7,17 @@
 //
 
 import UIKit
+
 class DetailViewController: UIViewController {
-    
+
+    // MARK: - Properties
     let imageView = UIImageView()
     var titleStr = ""
     
     var imageViewHeightConst:NSLayoutConstraint!
     
+    
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -28,11 +32,8 @@ class DetailViewController: UIViewController {
         navigationController?.navigationBar.isHidden = false
     }
     
-    @objc func pinchGesture(_ sender:UIPinchGestureRecognizer) {
-        imageView.transform = imageView.transform.scaledBy(x: sender.scale, y: sender.scale)
-        sender.scale = 1.0
-    }
     
+    // MARK: - Initial Setup for UI
     private func configureImageView() {
         title = self.titleStr
         imageView.layer.cornerRadius = 10
@@ -51,6 +52,8 @@ class DetailViewController: UIViewController {
         imageViewHeightConst.isActive = true
     }
     
+    
+    // MARK: - View Setter
     func set(image: UIImage) {
         let imageHeight = image.size.height
         let imageWidth = image.size.width
@@ -59,5 +62,12 @@ class DetailViewController: UIViewController {
         imageViewHeightConst.constant = constant
         self.view.layoutIfNeeded()
         imageView.image = image
+    }
+    
+    
+    // MARK: - Action Handler
+    @objc func pinchGesture(_ sender:UIPinchGestureRecognizer) {
+        imageView.transform = imageView.transform.scaledBy(x: sender.scale, y: sender.scale)
+        sender.scale = 1.0
     }
 }

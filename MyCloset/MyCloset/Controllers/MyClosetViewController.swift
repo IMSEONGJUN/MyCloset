@@ -15,6 +15,7 @@ protocol MyClosetViewControllerDelegate: class {
 
 class MyClosetViewController: UIViewController {
     
+    // MARK: - Properties
     let addNewClothesButton = UIButton()
     let makeCodiButton = UIButton()
     
@@ -23,6 +24,8 @@ class MyClosetViewController: UIViewController {
     let flowLayout = UICollectionViewFlowLayout()
     lazy var collectionView = UICollectionView(frame: view.frame, collectionViewLayout: flowLayout)
 
+    
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupCollectionView()
@@ -40,8 +43,33 @@ class MyClosetViewController: UIViewController {
         collectionView.reloadData()
     }
     
+    
+    // MARK: - Initial Setup
+    private func setupCollectionView() {
+        setupFlowLayout()
+        collectionView.backgroundColor = UIColor(named: "cameraBG")
+        collectionView.dataSource = self
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        collectionView.register(AccCollectionViewCell.self, forCellWithReuseIdentifier: AccCollectionViewCell.identifier)
+        collectionView.register(CapCell.self, forCellWithReuseIdentifier: CapCell.identifier)
+        collectionView.register(OuterCell.self, forCellWithReuseIdentifier: OuterCell.identifier)
+        collectionView.register(TopCell.self, forCellWithReuseIdentifier: TopCell.identifier)
+        collectionView.register(BottomCell.self, forCellWithReuseIdentifier: BottomCell.identifier)
+        collectionView.register(ShoesCell.self, forCellWithReuseIdentifier: ShoesCell.identifier)
+        collectionView.register(BagCell.self, forCellWithReuseIdentifier: BagCell.identifier)
+        collectionView.register(SocksCell.self, forCellWithReuseIdentifier: SocksCell.identifier)
+        view.addSubview(collectionView)
+    }
+    
+    private func setupFlowLayout() {
+        flowLayout.itemSize = CGSize(width: view.frame.width , height: 150)
+        flowLayout.minimumLineSpacing = 5
+        flowLayout.minimumInteritemSpacing = 20
+        flowLayout.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+        flowLayout.scrollDirection = .vertical
+    }
+    
     private func setupUI() {
-        
         addNewClothesButton.setTitle("옷 추가하기", for: .normal)
         addNewClothesButton.backgroundColor = UIColor(named: "textColor")
         addNewClothesButton.layer.cornerRadius = 7
@@ -61,7 +89,6 @@ class MyClosetViewController: UIViewController {
     }
     
     private func setupConstraints() {
-        
         addNewClothesButton.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
             $0.centerX.equalTo(view.snp.centerX)
@@ -82,6 +109,8 @@ class MyClosetViewController: UIViewController {
         }
     }
     
+    
+    // MARK: - Action Handler
     @objc private func didTapAddNewButton() {
         let cameraVC = CameraCustomViewController()
         cameraVC.delegate = self
@@ -95,90 +124,25 @@ class MyClosetViewController: UIViewController {
         present(makeCodiVC, animated: true)
     }
     
-    private func setupCollectionView() {
-        setupFlowLayout()
-        
-        collectionView.backgroundColor = UIColor(named: "cameraBG")
-        collectionView.dataSource = self
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        collectionView.register(AccCollectionViewCell.self, forCellWithReuseIdentifier: AccCollectionViewCell.identifier)
-        collectionView.register(CapCell.self, forCellWithReuseIdentifier: CapCell.identifier)
-        collectionView.register(OuterCell.self, forCellWithReuseIdentifier: OuterCell.identifier)
-        collectionView.register(TopCell.self, forCellWithReuseIdentifier: TopCell.identifier)
-        collectionView.register(BottomCell.self, forCellWithReuseIdentifier: BottomCell.identifier)
-        collectionView.register(ShoesCell.self, forCellWithReuseIdentifier: ShoesCell.identifier)
-        collectionView.register(BagCell.self, forCellWithReuseIdentifier: BagCell.identifier)
-        collectionView.register(SocksCell.self, forCellWithReuseIdentifier: SocksCell.identifier)
-        
-        
-        view.addSubview(collectionView)
-        
-    }
-    
-    private func setupFlowLayout() {
-        flowLayout.itemSize = CGSize(width: view.frame.width , height: 150)
-        flowLayout.minimumLineSpacing = 5
-        flowLayout.minimumInteritemSpacing = 20
-        flowLayout.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        flowLayout.scrollDirection = .vertical
-    }
-    
 }
 
+
+// MARK: - UICollectionViewDataSource
 extension MyClosetViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 8
+        return CategoryCellType.allCases.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cellType = CategoryCellType(rawValue: indexPath.item) else { fatalError() }
         
-        switch indexPath.item {
-        case 0:
-            let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: CapCell.identifier, for: indexPath) as! CapCell
-            customCell.configure(image: nil, title: "셀")
-            self.delegates[0] = customCell
-            return customCell
-        case 1:
-            let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: OuterCell.identifier, for: indexPath) as! OuterCell
-            customCell.configure(image: nil, title: "셀")
-            self.delegates[1] = customCell
-            return customCell
-        case 2:
-            let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: TopCell.identifier, for: indexPath) as! TopCell
-            customCell.configure(image: nil, title: "셀")
-            self.delegates[2] = customCell
-            return customCell
-        case 3:
-            let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: BottomCell.identifier, for: indexPath) as! BottomCell
-            customCell.configure(image: nil, title: "셀")
-            self.delegates[3] = customCell
-            return customCell
-        case 4:
-            let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: ShoesCell.identifier, for: indexPath) as! ShoesCell
-            customCell.configure(image: nil, title: "셀")
-            self.delegates[4] = customCell
-            return customCell
-        case 5:
-            let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: AccCollectionViewCell.identifier, for: indexPath) as! AccCollectionViewCell
-            customCell.configure(image: nil, title: "셀")
-            self.delegates[5] = customCell
-            return customCell
-        case 6:
-            let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: BagCell.identifier, for: indexPath) as! BagCell
-            customCell.configure(image: nil, title: "셀")
-            self.delegates[6] = customCell
-            return customCell
-        case 7:
-            let customCell = collectionView.dequeueReusableCell(withReuseIdentifier: SocksCell.identifier, for: indexPath) as! SocksCell
-            customCell.configure(image: nil, title: "셀")
-            self.delegates[7] = customCell
-            return customCell
-        default:
-            return UICollectionViewCell()
-        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellType.cellID, for: indexPath)
+        return cellType.typeCasting(contoller: self, cell: cell)
     }
 }
 
+
+// MARK: - CameraCustomViewControllerDelegate
 extension MyClosetViewController: CameraCustomViewControllerDelegate {
     func reloadRequest() {
         self.delegates.forEach({$0?.secondReloadRequest()})

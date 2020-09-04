@@ -12,6 +12,7 @@ import FirebaseStorage
 
 class MakeCodiViewController: UIViewController {
     
+    // MARK: - Properties
     let containerImageView = UIImageView()
     
     let capView = UIImageView()
@@ -28,6 +29,8 @@ class MakeCodiViewController: UIViewController {
     let makeCodiButton = UIButton()
     let cancelButton = UIButton()
     
+    
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         distributeImages()
@@ -36,6 +39,8 @@ class MakeCodiViewController: UIViewController {
         setConstraints()
     }
     
+    
+    // MARK: - Initial Setup
     private func distributeImages() {
         let keys = DataManager.shared.selectedImageSet.keys
         for key in keys {
@@ -62,6 +67,8 @@ class MakeCodiViewController: UIViewController {
         }
     }
     
+    
+    // MARK: - Setup UI
     private func setView() {
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -169,6 +176,8 @@ class MakeCodiViewController: UIViewController {
         accView.heightAnchor.constraint(equalTo: containerImageView.heightAnchor, multiplier: 0.15).isActive = true
     }
     
+    
+    // MARK: - Action Handler
     @objc private  func didTapMakeButton() {
         let image = containerImageView.asImage()
         guard let data = image.jpegData(compressionQuality: 0.1) else { return }

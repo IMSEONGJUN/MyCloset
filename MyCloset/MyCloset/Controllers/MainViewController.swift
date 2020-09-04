@@ -17,20 +17,19 @@ protocol MainViewControllerDelegate: class {
 
 class MainViewController: UIViewController {
     
+    // MARK: - Properties
     var collectionView: UICollectionView!
-    
+    var data: [String] = []
+    let weatherButton = UIButton()
     weak var delegate: MainViewControllerDelegate?
     
-    var data: [String] = []
     
-    let weatherButton = UIButton()
-    
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.isHidden = true
         configureCollectionView()
         configureWeatherButton()
-        
         for num in 0...66 {
             data.append("main"+"\(num)")
         }
@@ -41,6 +40,8 @@ class MainViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
     }
     
+    
+    // MARK: - Initial Setup for UI
     private func configureWeatherButton(){
         weatherButton.setImage(UIImage(systemName: "sun.max.fill",withConfiguration:UIImage.SymbolConfiguration(pointSize: 22, weight: .bold)), for: .normal)
         weatherButton.tintColor = .white
@@ -75,6 +76,8 @@ class MainViewController: UIViewController {
         view.addSubview(collectionView)
     }
     
+    
+    // MARK: - Action Handler
     @objc private func didTapWeatherButton() {
         guard let url = URL(string: "https://m.weather.naver.com/") else {return}
         let safariVC = SFSafariViewController(url: url)
@@ -84,6 +87,7 @@ class MainViewController: UIViewController {
 }
 
 
+// MARK: - UICollectionViewDataSource
 extension MainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
             return data.count + 2
@@ -106,6 +110,7 @@ extension MainViewController: UICollectionViewDataSource {
 }
 
 
+// MARK: - UICollectionViewDelegateFlowLayout
 extension MainViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
        guard indexPath.item != 0 && indexPath.item != 1 else {return}
@@ -126,6 +131,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
 }
 
 
+// MARK: - PinterLayoutDelegate
 extension MainViewController: PinterLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfColumn: Int, heightForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat {
         let image = UIImage(named: self.data[indexPath.item - 2])!

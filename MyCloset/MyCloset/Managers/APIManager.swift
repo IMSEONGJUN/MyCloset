@@ -76,4 +76,41 @@ class APIManager {
             }
         }
     }
+    
+    func signUp(email: String, password: String, completion: @escaping (Error?) -> Void) {
+        guard email.contains("@") == true && email.contains(".") == true && password.count >= 6 else { return }
+        Auth.auth().createUser(withEmail: email, password: password) { (user, err) in
+            if let err = err {
+                completion(err)
+                return
+            }
+            let uid = user?.user.uid ?? "" //현재 회원의 uid
+            let values = ["userName": email,
+                          "email": password,
+                          "uid": uid
+                         ]
+                
+            Database.database().reference().child("users").child(uid).setValue(values) { (err, _) in
+                if let err = err {
+                    completion(err)
+                    print("회원가입 실패")
+                    return
+                }
+                print("회원가입이 완료되었습니다.")
+            }
+        }
+    }
+    
+    func login(email: String, password: String, completion: @escaping (Error?) -> Void) {
+        guard email.contains("@") == true && email.contains(".") == true && password.count >= 6 else { return }
+        Auth.auth().signIn(withEmail: email, password: password) { (_, error) in
+            if let error = error {
+                completion(error)
+                return
+            }
+            
+            completion(nil)
+        }
+        
+    }
 }

@@ -14,38 +14,47 @@ import FirebaseDatabase
 
 class SignUpViewController: UIViewController {
     
+    // MARK: - Properties
     let titleLabel = UILabel()
     let underTitleLabel = UILabel()
-    
     let emailTextField = UITextField()
     let passwordTextField = UITextField()
     let userNameTextField = UITextField()
-    
     let signUpButton = UIButton(type: .system)
     
     
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        emailTextField.delegate = self
-        passwordTextField.delegate = self
-        userNameTextField.delegate = self
-        setupUI()
+        configureTitleLabel()
+        configureUnderTitleLabel()
+        configureEmailTextField()
+        configurePasswordTextField()
+        configureUsernameTextField()
+        configureSignUpButton()
+        setupConstraints()
     }
     
     
-    //MARK: SetupUI
-    private func setupUI() {
-        
+    // MARK: - Initial Setup for UI
+    private func configureTitleLabel() {
+        view.addSubview(titleLabel)
         titleLabel.text = "가입하기"
         titleLabel.font = UIFont.systemFont(ofSize: 25, weight: .bold)
         titleLabel.textAlignment = .center
-        
+    }
+    
+    private func configureUnderTitleLabel() {
+        view.addSubview(underTitleLabel)
         underTitleLabel.text = "지금 가입하시고 \n 모든 혜택을 누리세요"
         underTitleLabel.numberOfLines = 0
         underTitleLabel.font = UIFont.systemFont(ofSize: 22, weight: .light)
         underTitleLabel.textAlignment = .center
-        
+    }
+    
+    private func configureEmailTextField() {
+        view.addSubview(emailTextField)
         emailTextField.placeholder = "이메일"
         emailTextField.backgroundColor = UIColor(named: "TextFieldColor")
         emailTextField.layer.cornerRadius = 7
@@ -53,7 +62,11 @@ class SignUpViewController: UIViewController {
         emailTextField.leftView = emailPaddingView
         emailTextField.leftViewMode = .always
         emailTextField.keyboardType = .emailAddress
-        
+        emailTextField.delegate = self
+    }
+    
+    private func configurePasswordTextField() {
+        view.addSubview(passwordTextField)
         passwordTextField.placeholder = "비밀번호"
         passwordTextField.backgroundColor = UIColor(named: "TextFieldColor")
         passwordTextField.layer.cornerRadius = 7
@@ -61,15 +74,22 @@ class SignUpViewController: UIViewController {
         passwordTextField.leftView = pwPaddingView
         passwordTextField.leftViewMode = .always
         passwordTextField.isSecureTextEntry = true
-        
+        passwordTextField.delegate = self
+    }
+    
+    private func configureUsernameTextField() {
+        view.addSubview(userNameTextField)
         userNameTextField.placeholder = "닉네임"
         userNameTextField.backgroundColor = UIColor(named: "TextFieldColor")
         userNameTextField.layer.cornerRadius = 7
         let namePaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: userNameTextField.frame.height))
         userNameTextField.leftView = namePaddingView
         userNameTextField.leftViewMode = .always
-        userNameTextField.isSecureTextEntry = true
-        
+        userNameTextField.delegate = self
+    }
+    
+    private func configureSignUpButton() {
+        view.addSubview(signUpButton)
         signUpButton.setTitle("회원가입", for: .normal)
         signUpButton.titleLabel?.font = UIFont.systemFont(ofSize: 19)
         signUpButton.backgroundColor = UIColor(named: "KeyColor")
@@ -77,16 +97,6 @@ class SignUpViewController: UIViewController {
         signUpButton.layer.cornerRadius = 7
         signUpButton.shadow()
         signUpButton.addTarget(self, action: #selector(didTapSignUpButton), for: .touchUpInside)
-        
-        view.addSubviews(
-            [titleLabel,
-             underTitleLabel,
-             emailTextField,
-             passwordTextField,
-             userNameTextField,
-             signUpButton]
-        )
-        setupConstraints()
     }
     
     private func setupConstraints() {
@@ -125,57 +135,41 @@ class SignUpViewController: UIViewController {
     }
     
     
-    //MARK: Actions
-    
-    //MARK: 회원가입
+    // MARK: - Action Handler
     @objc private func didTapSignUpButton() {
-        if emailTextField.text?.contains("@") == true && emailTextField.text?.contains(".") == true && passwordTextField.text?.count ?? 0 >= 6 {
-            Auth.auth().createUser(withEmail: emailTextField.text!, password: passwordTextField.text!) { (user, err) in
-                if err == nil {
-                    let uid = user?.user.uid ?? "" //현재 회원의 uid
-                    let values = ["userName": self.userNameTextField.text ?? "noname",
-                                  "email": self.emailTextField.text ?? "wrongEmail",
-                                  "uid": uid
-                                 ]
-                    
-                    Database.database().reference().child("users").child(uid).setValue(values) { (err, _) in
-                        if err == nil {
-                            print("회원가입이 완료되었습니다.")
-                            self.dismiss(animated: true)
-                        } else {
-                            print("회원가입 실패")
-                            
-                        }
-                    }
-                }
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        print("sign up")
+        APIManager.shared.signUp(email: email, password: password) { (err) in
+            guard err == nil else {
+                print("failed to SignUp: ", err?.localizedDescription ?? "")
+                return
             }
-        } else {
-            print("wrong Info")
+            self.dismiss(animated: true)
         }
     }
     
-    //MARK: 텍스트필드 아닌 곳 터치 시 키보드 내리기
+    // MARK: - For KeyboardHide Helper
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
     }
 }
 
+
+// MARK: - UITextFieldDelegate
 extension SignUpViewController: UITextFieldDelegate {
-    
-    //MARK: 텍스트필드 눌렀을 때 UI 올리기
     func textFieldDidBeginEditing(_ textField: UITextField) {
         UIView.animate(withDuration: 0.25) {
             self.signUpButton.transform = .init(translationX: 0, y: -self.view.frame.height * 0.34)
         }
     }
-    //MARK: 텍스트필드 아닌 곳 눌렀을 때 UI 내리기
+    
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
         UIView.animate(withDuration: 0.25) {
             self.signUpButton.transform = .identity
         }
     }
     
-    //MARK: 엔터키 눌렀을 때도 키보드 없애기
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
         return true

@@ -11,6 +11,8 @@ import SnapKit
 
 class TutorialViewController: UIViewController {
     
+    
+    // MARK: - Properties
     let scrollView = UIScrollView()
     let pageController = UIPageControl()
     let skipButton = UIButton()
@@ -29,6 +31,8 @@ class TutorialViewController: UIViewController {
     
     let loginPageView = UIView()
     
+    
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -36,6 +40,9 @@ class TutorialViewController: UIViewController {
         setupConstraints()
         add(childVC: LoginViewController(), to: loginPageView)
     }
+    
+    
+    // MARK: - Initial Setup for UI
     private func setupUI() {
         subViews = [scrollView, pageController, skipButton, nextButton, signUpButton]
         subViews.forEach{view.addSubview($0)}
@@ -162,6 +169,9 @@ class TutorialViewController: UIViewController {
             $0.height.equalTo(50)
         }
     }
+    
+    
+    // MARK: - Action Handler
     @objc func didTapButton(_ sender: UIButton) {
         switch sender {
         case skipButton:
@@ -184,6 +194,9 @@ class TutorialViewController: UIViewController {
             }
         }
     }
+    
+    
+    // MARK: - Helper
     func add(childVC: UIViewController, to containerView: UIView) {
         addChild(childVC)
         containerView.addSubview(childVC.view)
@@ -192,6 +205,8 @@ class TutorialViewController: UIViewController {
     }
 }
 
+
+// MARK: - UIScrollViewDelegate
 extension TutorialViewController: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let pageNumber = scrollView.contentOffset.x / scrollView.frame.width
