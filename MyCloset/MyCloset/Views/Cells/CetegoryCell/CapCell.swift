@@ -12,29 +12,16 @@ import FirebaseStorage
 
 class CapCell: UICollectionViewCell {
     
-    
+    // MARK: - Properties
     static let identifier = "CapCell"
     private let titleLabel = UILabel()
     var selectedIndexPath: [IndexPath] = []
-    var isChecked = false
-    
     let imageView = UIImageView()
     let flowLayout = UICollectionViewFlowLayout()
+    lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
     
-    var imageFromServer = UIImage()
     
-    var capCompleteDownloadFile = 0
-    var capFileCount = 0
-    
-    lazy var collectionView = UICollectionView(
-        frame: self.contentView.frame, collectionViewLayout: flowLayout
-    )
-    
-    // MARK: Init
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+    // MARK: - Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.setupViews()
@@ -42,27 +29,30 @@ class CapCell: UICollectionViewCell {
         fetchImageFromStorage()
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     deinit {
         print("deinit")
     }
     
-    // MARK: Setup
     
+    // MARK: - Initial Setup for UI
     private func setupViews() {
         self.clipsToBounds = true
-        //imageView
         self.contentView.shadow()
         setupFlowLayout()
         imageView.image = UIImage(named: "cellimage")
         collectionView.backgroundView = imageView
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
+        collectionView.register(MyClosetInnerCollectionViewCell.self,
+                                forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
         collectionView.alwaysBounceHorizontal = true
         contentView.addSubview(collectionView)
-        
     }
     
     private func setupFlowLayout() {
@@ -74,57 +64,35 @@ class CapCell: UICollectionViewCell {
     }
     
     private func setupConstraints() {
-        
         collectionView.snp.makeConstraints {
-            $0.top.bottom.trailing.leading.equalToSuperview()
+            $0.edges.equalToSuperview()
         }
     }
     
-    // MARK: Configure Cell
-    func configure(image: UIImage?, title: String) {
+    
+    // MARK: - Cell Setter
+    func configure(title: String) {
         titleLabel.text = title
     }
     
-    //MARK: Firebase Storage
-    
     func fetchImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        let capRef = storageRef.child("cap/")
-        
-        capRef.listAll { (storageListResult, error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            let fileCount = storageListResult.items.count
-            self.capFileCount = fileCount
-            print("cap file count", fileCount)
-        
-            (0..<fileCount).forEach({
-                let num = $0
-                capRef.child("cap"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                    if let err = error {
-                        print(err)
-                    }
-                    
-                    self.imageFromServer = UIImage(data: data!)!
-                    DataManager.shared.cap.updateValue(self.imageFromServer, forKey: "cap"+"\(num)")
-                    
-                    self.capCompleteDownloadFile += 1
-                    
-                    if self.capFileCount == self.capCompleteDownloadFile {
-                        self.collectionView.reloadData()
-                    }
+        APIManager.shared.fetchImageFromFirebase(category: "cap") { (result) in
+            switch result {
+            case .success(let images):
+                for (idx,image) in images.enumerated() {
+                    DataManager.shared.cap.updateValue(image, forKey: "cap"+"\(idx)")
                 }
-            })
+                self.collectionView.reloadData()
+            case .failure(let error):
+                print("failed to fetch cap images: ", error)
+            }
         }
     }
     
 }
 
 
-
+// MARK: - UICollectionViewDataSource
 extension CapCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return DataManager.shared.cap.count
@@ -140,6 +108,8 @@ extension CapCell: UICollectionViewDataSource {
     }
 }
 
+
+// MARK: - MyClosetViewControllerDelegate
 extension CapCell: MyClosetViewControllerDelegate {
     func secondReloadRequest() {
         print("Cap reloaded")
@@ -147,6 +117,8 @@ extension CapCell: MyClosetViewControllerDelegate {
     }
 }
 
+
+// MARK: - UICollectionViewDelegate
 extension CapCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! MyClosetInnerCollectionViewCell

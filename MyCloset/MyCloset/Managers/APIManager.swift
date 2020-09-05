@@ -15,6 +15,45 @@ class APIManager {
     
     private init() { }
     
+    func fetchImageFromFirebase(category: String, completion: @escaping (Result<[UIImage], Error>) -> Void ) {
+        var images = [UIImage]()
+        
+        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
+        let ref = storageRef.child("\(category)/")
+        
+        ref.listAll { (storageListResult, error) in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            let currentFileCount = storageListResult.items.count
+            
+            print("\(category) file count", currentFileCount)
+            
+            let group = DispatchGroup()
+            (0..<currentFileCount).forEach({
+                let num = $0
+                group.enter()
+                ref.child("\(category)"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                    if let err = error {
+                        completion(.failure(err))
+                        return
+                    }
+                    
+                    guard let data = data, let imageFromServer = UIImage(data: data) else { return }
+                    print("Image file: ", imageFromServer)
+                    images.append(imageFromServer)
+                    group.leave()
+                }
+            })
+            group.notify(queue: .main) {
+                print("fetched images count: ", images.count)
+                completion(.success(images))
+            }
+        }
+    }
+    
     func uploadImageNotRemovedBackground(image: UIImage, completion: @escaping (Result<String,Error>) -> Void) {
         let meta = StorageMetadata()
         meta.contentType = "image/jpeg"

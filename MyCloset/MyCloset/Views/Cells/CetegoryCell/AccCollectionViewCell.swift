@@ -12,21 +12,13 @@ import FirebaseStorage
 
 class AccCollectionViewCell: UICollectionViewCell {
     
+    // MARK: - Properties
     static let identifier = "AccCell"
-    
-    private let titleLabel = UILabel()
     var selectedIndexPath: [IndexPath] = []
-    var isChecked = false
     let flowLayout = UICollectionViewFlowLayout()
-    var imageFromServer = UIImage()
     let imageView = UIImageView()
+    lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
     
-    var accCompleteDownloadFile = 0
-    var accFileCount = 0
-    
-    lazy var collectionView = UICollectionView(
-        frame: self.contentView.frame, collectionViewLayout: flowLayout
-    )
     
     // MARK: - Initializer
     required init?(coder aDecoder: NSCoder) {
@@ -45,10 +37,9 @@ class AccCollectionViewCell: UICollectionViewCell {
     }
     
     
-    // MARK: - Setup
+    // MARK: - Initial Setup for UI
     private func setupViews() {
         self.clipsToBounds = true
-        //imageView
         setupFlowLayout()
         configureCollectionView()
     }
@@ -59,7 +50,8 @@ class AccCollectionViewCell: UICollectionViewCell {
         collectionView.backgroundView = imageView
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
+        collectionView.register(MyClosetInnerCollectionViewCell.self,
+                                forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
         collectionView.alwaysBounceHorizontal = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
@@ -79,51 +71,26 @@ class AccCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    // MARK: Configure Cell
-    func configure(image: UIImage?, title: String) {
-        titleLabel.text = title
-    }
     
-    //MARK: Firebase Storage
-    
+    // MARK: - Cell Setter
     func fetchImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        let accRef = storageRef.child("acc/")
-        
-        accRef.listAll { (storageListResult, error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            let fileCount = storageListResult.items.count
-            self.accFileCount = fileCount
-            print("acc file count", fileCount)
-        
-            (0..<fileCount).forEach({
-                let num = $0
-                accRef.child("acc"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                    if let err = error {
-                        print(err)
-                    }
-                    
-                    self.imageFromServer = UIImage(data: data!)!
-                    DataManager.shared.acc.updateValue(self.imageFromServer, forKey: "acc"+"\(num)")
-                    
-                    self.accCompleteDownloadFile += 1
-                    
-                    if self.accFileCount == self.accCompleteDownloadFile {
-                        self.collectionView.reloadData()
-                    }
+        APIManager.shared.fetchImageFromFirebase(category: "acc") { (result) in
+            switch result {
+            case .success(let images):
+                for (idx,image) in images.enumerated() {
+                    DataManager.shared.acc.updateValue(image, forKey: "acc"+"\(idx)")
                 }
-            })
+                self.collectionView.reloadData()
+            case .failure(let error):
+                print("failed to fetch acc images: ", error)
+            }
         }
     }
     
 }
 
 
-
+// MARK: - UICollectionViewDataSource
 extension AccCollectionViewCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return DataManager.shared.acc.count
@@ -137,16 +104,19 @@ extension AccCollectionViewCell: UICollectionViewDataSource {
     }
 }
 
+
+// MARK: - MyClosetViewControllerDelegate
 extension AccCollectionViewCell: MyClosetViewControllerDelegate {
     func secondReloadRequest() {
         self.collectionView.reloadData()
     }
 }
 
+
+// MARK: - UICollectionViewDelegate
 extension AccCollectionViewCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! MyClosetInnerCollectionViewCell
-        
         guard let seletedAccImage = cell.imageView.image else { return }
         DataManager.shared.selectedImageSet.updateValue(seletedAccImage, forKey: "acc")
     }

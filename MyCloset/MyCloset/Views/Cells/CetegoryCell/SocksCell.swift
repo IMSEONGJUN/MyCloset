@@ -12,22 +12,19 @@ import FirebaseStorage
 
 class SocksCell: UICollectionViewCell {
     
+    // MARK: - Properties
     let imageView = UIImageView()
     static let identifier = "SocksCell"
     private let titleLabel = UILabel()
     var selectedIndexPath: [IndexPath] = []
-    var isChecked = false
-    let flowLayout = UICollectionViewFlowLayout()
-    var imageFromServer = UIImage()
     
-    var socksCompleteDownloadFile = 0
-    var socksFileCount = 0
+    let flowLayout = UICollectionViewFlowLayout()
     
     lazy var collectionView = UICollectionView(
         frame: self.contentView.frame, collectionViewLayout: flowLayout
     )
     
-    // MARK: Init
+    // MARK: - Initializer
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -43,23 +40,21 @@ class SocksCell: UICollectionViewCell {
         print("deinit")
     }
     
-    // MARK: Setup
     
+    // MARK: - Initial Setup for UI
     private func setupViews() {
         self.clipsToBounds = true
-        //imageView
-        
         imageView.image = UIImage(named: "cellimage")
         collectionView.backgroundView = imageView
         setupFlowLayout()
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
+        collectionView.register(MyClosetInnerCollectionViewCell.self,
+                                forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
         collectionView.alwaysBounceHorizontal = true
         contentView.addSubview(collectionView)
-        
     }
     
     private func setupFlowLayout() {
@@ -71,57 +66,34 @@ class SocksCell: UICollectionViewCell {
     }
     
     private func setupConstraints() {
-        
         collectionView.snp.makeConstraints {
-            $0.top.bottom.trailing.leading.equalToSuperview()
+            $0.edges.equalToSuperview()
         }
     }
     
-    // MARK: Configure Cell
-    func configure(image: UIImage?, title: String) {
+    
+    // MARK: - Cell Setter
+    func configure(title: String) {
         titleLabel.text = title
     }
     
-    //MARK: Firebase Storage
-    
     func fetchImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        let socksRef = storageRef.child("socks/")
-        
-        socksRef.listAll { (storageListResult, error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            let fileCount = storageListResult.items.count
-            self.socksFileCount = fileCount
-            print("socks file count", fileCount)
-        
-            (0..<fileCount).forEach({
-                let num = $0
-                socksRef.child("socks"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                    if let err = error {
-                        print(err)
-                    }
-                    
-                    self.imageFromServer = UIImage(data: data!)!
-                    DataManager.shared.socks.updateValue(self.imageFromServer, forKey: "socks"+"\(num)")
-                    
-                    self.socksCompleteDownloadFile += 1
-                    
-                    if self.socksFileCount == self.socksCompleteDownloadFile {
-                        self.collectionView.reloadData()
-                    }
+        APIManager.shared.fetchImageFromFirebase(category: "socks") { (result) in
+            switch result {
+            case .success(let images):
+                for (idx,image) in images.enumerated() {
+                    DataManager.shared.socks.updateValue(image, forKey: "socks"+"\(idx)")
                 }
-            })
+                self.collectionView.reloadData()
+            case .failure(let error):
+                print("failed to fetch socks images: ", error)
+            }
         }
     }
-    
 }
 
 
-
+// MARK: - UICollectionViewDataSource
 extension SocksCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return DataManager.shared.socks.count
@@ -137,6 +109,8 @@ extension SocksCell: UICollectionViewDataSource {
     }
 }
 
+
+// MARK: - MyClosetViewControllerDelegate
 extension SocksCell: MyClosetViewControllerDelegate {
     func secondReloadRequest() {
         print("Socks reloaded")
@@ -144,6 +118,8 @@ extension SocksCell: MyClosetViewControllerDelegate {
     }
 }
 
+
+// MARK: - UICollectionViewDelegate
 extension SocksCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! MyClosetInnerCollectionViewCell

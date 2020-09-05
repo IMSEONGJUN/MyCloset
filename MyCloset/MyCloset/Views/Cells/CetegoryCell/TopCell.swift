@@ -12,23 +12,16 @@ import FirebaseStorage
 
 class TopCell: UICollectionViewCell {
     
-    
+    // MARK: - Properties
     static let identifier = "TopCell"
     private let titleLabel = UILabel()
     var selectedIndexPath: [IndexPath] = []
-    var isChecked = false
     let flowLayout = UICollectionViewFlowLayout()
-    var imageFromServer = UIImage()
     let imageView = UIImageView()
+    lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
     
-    var topCompleteDownloadFile = 0
-    var topFileCount = 0
     
-    lazy var collectionView = UICollectionView(
-        frame: self.contentView.frame, collectionViewLayout: flowLayout
-    )
-    
-    // MARK: Init
+    // MARK: - Initializer
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -44,23 +37,21 @@ class TopCell: UICollectionViewCell {
         print("deinit")
     }
     
-    // MARK: Setup
     
+    // MARK: - Initial Setup for UI
     private func setupViews() {
         self.clipsToBounds = true
-        //imageView
-        
         imageView.image = UIImage(named: "cellimage")
         collectionView.backgroundView = imageView
         setupFlowLayout()
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
+        collectionView.register(MyClosetInnerCollectionViewCell.self,
+                                forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
         collectionView.alwaysBounceHorizontal = true
         contentView.addSubview(collectionView)
-        
     }
     
     private func setupFlowLayout() {
@@ -72,56 +63,34 @@ class TopCell: UICollectionViewCell {
     }
     
     private func setupConstraints() {
-        
         collectionView.snp.makeConstraints {
-            $0.top.bottom.trailing.leading.equalToSuperview()
+            $0.edges.equalToSuperview()
         }
     }
     
-    // MARK: Configure Cell
-    func configure(image: UIImage?, title: String) {
+    
+    // MARK: - Cell Setter
+    func configure(title: String) {
         titleLabel.text = title
     }
     
-    //MARK: Firebase Storage
-    
     func fetchImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        let topRef = storageRef.child("top/")
-        
-        topRef.listAll { (storageListResult, error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            let fileCount = storageListResult.items.count
-            self.topFileCount = fileCount
-            print("top file count", fileCount)
-        
-            (0..<fileCount).forEach({
-                let num = $0
-                topRef.child("top"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                    if let err = error {
-                        print(err)
-                    }
-                    
-                    self.imageFromServer = UIImage(data: data!)!
-                    DataManager.shared.top.updateValue(self.imageFromServer, forKey: "top"+"\(num)")
-                    
-                    self.topCompleteDownloadFile += 1
-                    
-                    if self.topFileCount == self.topCompleteDownloadFile {
-                        self.collectionView.reloadData()
-                    }
+        APIManager.shared.fetchImageFromFirebase(category: "top") { (result) in
+            switch result {
+            case .success(let images):
+                for (idx,image) in images.enumerated() {
+                    DataManager.shared.top.updateValue(image, forKey: "top"+"\(idx)")
                 }
-            })
+                self.collectionView.reloadData()
+            case .failure(let error):
+                print("failed to fetch top images: ", error)
+            }
         }
     }
 }
 
 
-
+// MARK: - UICollectionViewDataSource
 extension TopCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return DataManager.shared.top.count
@@ -136,6 +105,7 @@ extension TopCell: UICollectionViewDataSource {
     }
 }
 
+// MARK: - MyClosetViewControllerDelegate
 extension TopCell: MyClosetViewControllerDelegate {
     func secondReloadRequest() {
         print("Top reloaded")
@@ -143,6 +113,7 @@ extension TopCell: MyClosetViewControllerDelegate {
     }
 }
 
+// MARK: - UICollectionViewDelegate
 extension TopCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! MyClosetInnerCollectionViewCell

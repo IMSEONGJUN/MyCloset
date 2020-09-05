@@ -13,22 +13,16 @@ import FirebaseStorage
 
 class BottomCell: UICollectionViewCell {
     
+    // MARK: - Properties
     let imageView = UIImageView()
     static let identifier = "BottomCell"
     private let titleLabel = UILabel()
     var selectedIndexPath: [IndexPath] = []
-    var isChecked = false
     let flowLayout = UICollectionViewFlowLayout()
-    var imageFromServer = UIImage()
+    lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
     
-    var bottomCompleteDownloadFile = 0
-    var bottomFileCount = 0
     
-    lazy var collectionView = UICollectionView(
-        frame: self.contentView.frame, collectionViewLayout: flowLayout
-    )
-    
-    // MARK: Init
+    // MARK: - Initializer
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -44,23 +38,21 @@ class BottomCell: UICollectionViewCell {
         print("deinit")
     }
     
-    // MARK: Setup
     
+    // MARK: - Initial Setup for UI
     private func setupViews() {
         self.clipsToBounds = true
-        //imageView
-        
         imageView.image = UIImage(named: "cellimage")
         collectionView.backgroundView = imageView
         setupFlowLayout()
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(MyClosetInnerCollectionViewCell.self, forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
+        collectionView.register(MyClosetInnerCollectionViewCell.self,
+                                forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
         collectionView.alwaysBounceHorizontal = true
         contentView.addSubview(collectionView)
-        
     }
     
     private func setupFlowLayout() {
@@ -72,57 +64,35 @@ class BottomCell: UICollectionViewCell {
     }
     
     private func setupConstraints() {
-        
         collectionView.snp.makeConstraints {
-            $0.top.bottom.trailing.leading.equalToSuperview()
+            $0.edges.equalToSuperview()
         }
     }
     
-    // MARK: Configure Cell
-    func configure(image: UIImage?, title: String) {
+    
+    // MARK: - Cell Setter
+    func configure(title: String) {
         titleLabel.text = title
     }
     
-    //MARK: Firebase Storage
-    
     func fetchImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        let bottomRef = storageRef.child("bottom/")
-        
-        bottomRef.listAll { (storageListResult, error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            let fileCount = storageListResult.items.count
-            self.bottomFileCount = fileCount
-            print("bottom file count", fileCount)
-        
-            (0..<fileCount).forEach({
-                let num = $0
-                bottomRef.child("bottom"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                    if let err = error {
-                        print(err)
-                    }
-                    
-                    self.imageFromServer = UIImage(data: data!)!
-                    DataManager.shared.bottom.updateValue(self.imageFromServer, forKey: "bottom"+"\(num)")
-                    
-                    self.bottomCompleteDownloadFile += 1
-                    
-                    if self.bottomFileCount == self.bottomCompleteDownloadFile {
-                        self.collectionView.reloadData()
-                    }
+        APIManager.shared.fetchImageFromFirebase(category: "bottom") { (result) in
+            switch result {
+            case .success(let images):
+                for (idx,image) in images.enumerated() {
+                    DataManager.shared.bottom.updateValue(image, forKey: "bottom"+"\(idx)")
                 }
-            })
+                self.collectionView.reloadData()
+            case .failure(let error):
+                print("failed to fetch bottom images: ", error)
+            }
         }
     }
     
 }
 
 
-
+// MARK: - UICollectionViewDataSource
 extension BottomCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return DataManager.shared.bottom.count
@@ -138,6 +108,8 @@ extension BottomCell: UICollectionViewDataSource {
     }
 }
 
+
+// MARK: - MyClosetViewControllerDelegate
 extension BottomCell: MyClosetViewControllerDelegate {
     func secondReloadRequest() {
         print("Bottom reloaded")
@@ -145,6 +117,8 @@ extension BottomCell: MyClosetViewControllerDelegate {
     }
 }
 
+
+// MARK: - UICollectionViewDelegate
 extension BottomCell: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! MyClosetInnerCollectionViewCell

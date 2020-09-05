@@ -103,42 +103,34 @@ enum CategoryCellType: Int, CaseIterable {
         switch self {
         case .top:
             let casted = cell as! TopCell
-            casted.configure(image: nil, title: "셀")
             contoller.delegates[self.rawValue] = casted
             return casted
         case .bottom:
             let casted = cell as! BottomCell
-            casted.configure(image: nil, title: "셀")
             contoller.delegates[self.rawValue] = casted
             return casted
         case .outer:
             let casted = cell as! OuterCell
-            casted.configure(image: nil, title: "셀")
             contoller.delegates[self.rawValue] = casted
             return casted
         case .shoes:
             let casted = cell as! ShoesCell
-            casted.configure(image: nil, title: "셀")
             contoller.delegates[self.rawValue] = casted
             return casted
         case .cap:
             let casted = cell as! CapCell
-            casted.configure(image: nil, title: "셀")
             contoller.delegates[self.rawValue] = casted
             return casted
         case .socks:
             let casted = cell as! SocksCell
-            casted.configure(image: nil, title: "셀")
             contoller.delegates[self.rawValue] = casted
             return casted
         case .bag:
             let casted = cell as! BagCell
-            casted.configure(image: nil, title: "셀")
             contoller.delegates[self.rawValue] = casted
             return casted
         case .acc:
             let casted = cell as! AccCollectionViewCell
-            casted.configure(image: nil, title: "셀")
             contoller.delegates[self.rawValue] = casted
             return casted
         }

@@ -139,7 +139,6 @@ class SignUpViewController: UIViewController {
     @objc private func didTapSignUpButton() {
         guard let email = emailTextField.text else { return }
         guard let password = passwordTextField.text else { return }
-        print("sign up")
         APIManager.shared.signUp(email: email, password: password) { (err) in
             guard err == nil else {
                 print("failed to SignUp: ", err?.localizedDescription ?? "")
@@ -148,6 +147,7 @@ class SignUpViewController: UIViewController {
             self.dismiss(animated: true)
         }
     }
+    
     
     // MARK: - For KeyboardHide Helper
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
