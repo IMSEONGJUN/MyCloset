@@ -16,7 +16,7 @@ class APIManager {
     private init() { }
     
     func fetchImageFromFirebase(category: String, completion: @escaping (Result<[UIImage], Error>) -> Void ) {
-        var images = [UIImage]()
+        var images = [Int : UIImage]()
         
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
         let ref = storageRef.child("\(category)/")
@@ -44,14 +44,15 @@ class APIManager {
                         
                         guard let data = data, let imageFromServer = UIImage(data: data) else { return }
                         print("Image file: ", imageFromServer)
-                        images.append(imageFromServer)
+                        images.updateValue(imageFromServer, forKey: num)
                         group.leave()
                     }
-                    group.wait()
+                    
                 })
                 group.notify(queue: .main) {
                     print("fetched images count: ", images.count)
-                    completion(.success(images))
+                    let sortedImages = images.sorted(by: {$0.0 < $1.0}).map{$0.value}
+                    completion(.success(sortedImages))
                 }
             }
         } 

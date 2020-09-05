@@ -63,6 +63,7 @@ class CapCell: UICollectionViewCell {
         collectionView.allowsMultipleSelection = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 25, bottom: 0, right: -30)
         collectionView.alwaysBounceHorizontal = true
+        collectionView.showsHorizontalScrollIndicator = false
         contentView.addSubview(collectionView)
     }
     

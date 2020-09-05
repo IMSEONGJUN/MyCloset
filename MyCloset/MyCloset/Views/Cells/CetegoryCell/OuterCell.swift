@@ -61,6 +61,7 @@ class OuterCell: UICollectionViewCell {
         collectionView.register(MyClosetInnerCollectionViewCell.self,
                                 forCellWithReuseIdentifier: MyClosetInnerCollectionViewCell.identifier)
         collectionView.allowsMultipleSelection = true
+        collectionView.showsHorizontalScrollIndicator = false
         contentView.addSubview(collectionView)
     }
     
