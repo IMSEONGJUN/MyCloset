@@ -12,12 +12,12 @@ import Firebase
 
 class APIManager {
     static let shared = APIManager()
-    
+    var cache = NSCache<NSString,UIImage>()
     private init() { }
     
     func fetchImageFromFirebase(category: String, completion: @escaping (Result<[UIImage], Error>) -> Void ) {
-        var images = [Int : UIImage]()
-        
+        var images = [String : UIImage]()
+        cache.countLimit = 50
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
         let ref = storageRef.child("\(category)/")
          
@@ -33,6 +33,13 @@ class APIManager {
             let group = DispatchGroup()
             (0..<currentFileCount).forEach({
                 let num = $0
+                let key = "\(category)"+"\(num)"+".png"
+                let cacheKey = NSString(string: key)
+                if let cachedImage = self.cache.object(forKey: cacheKey) {
+                    images.updateValue(cachedImage, forKey: key)
+                    return
+                }
+                
                 group.enter()
                 ref.child("\(category)"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
                     if let err = error {
@@ -42,11 +49,12 @@ class APIManager {
                     
                     guard let data = data, let imageFromServer = UIImage(data: data) else { return }
                     print("Image file: ", imageFromServer)
-                    images.updateValue(imageFromServer, forKey: num)
+                    images.updateValue(imageFromServer, forKey: key)
+                    self.cache.setObject(imageFromServer, forKey: cacheKey)
                     group.leave()
                 }
-                
             })
+            
             group.notify(queue: .main) {
                 print("fetched images count: ", images.count)
                 let sortedImages = images.sorted(by: {$0.0 < $1.0}).map{$0.value}
