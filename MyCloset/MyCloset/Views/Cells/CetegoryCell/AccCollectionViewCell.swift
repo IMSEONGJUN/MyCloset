@@ -18,7 +18,7 @@ class AccCollectionViewCell: UICollectionViewCell {
     let flowLayout = UICollectionViewFlowLayout()
     let imageView = UIImageView()
     lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
-    
+    var token: NSObjectProtocol?
     
     // MARK: - Initializer
     required init?(coder aDecoder: NSCoder) {
@@ -30,10 +30,21 @@ class AccCollectionViewCell: UICollectionViewCell {
         self.setupViews()
         self.setupConstraints()
         fetchImageFromStorage()
+        configureNotification()
     }
     
     deinit {
-        print("deinit")
+        if let token = token {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+    
+    // MARK: - AddObserver to Noti
+    func configureNotification() {
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+            print("acc noti")
+            self?.fetchImageFromStorage()
+        })
     }
     
     
@@ -101,14 +112,6 @@ extension AccCollectionViewCell: UICollectionViewDataSource {
                                                       for: indexPath) as! MyClosetInnerCollectionViewCell
         cell.configure(image: DataManager.shared.acc["acc"+"\(indexPath.item)"])
         return cell
-    }
-}
-
-
-// MARK: - MyClosetViewControllerDelegate
-extension AccCollectionViewCell: MyClosetViewControllerDelegate {
-    func secondReloadRequest() {
-        self.collectionView.reloadData()
     }
 }
 

@@ -66,6 +66,30 @@ enum CategoryButtonType: Int {
         return -0
     }
     
+    var dataPath: [String: UIImage] {
+        switch self.rawValue {
+        case 1:
+            return DataManager.shared.top
+        case 2:
+            return DataManager.shared.bottom
+        case 3:
+            return DataManager.shared.outer
+        case 4:
+            return DataManager.shared.shoes
+        case 5:
+            return DataManager.shared.cap
+        case 6:
+            return DataManager.shared.socks
+        case 7:
+            return DataManager.shared.bag
+        case 8:
+            return DataManager.shared.acc
+        default:
+            break
+        }
+        return [String: UIImage]()
+    }
+    
 }
 
 enum CategoryCellType: Int, CaseIterable {
@@ -99,40 +123,36 @@ enum CategoryCellType: Int, CaseIterable {
         }
     }
     
-    func typeCasting(contoller: MyClosetViewController, cell: UICollectionViewCell) -> UICollectionViewCell {
+    func typeCasting(cell: UICollectionViewCell) -> UICollectionViewCell {
         switch self {
         case .top:
             let casted = cell as! TopCell
-            contoller.delegates[self.rawValue] = casted
             return casted
         case .bottom:
             let casted = cell as! BottomCell
-            contoller.delegates[self.rawValue] = casted
             return casted
         case .outer:
             let casted = cell as! OuterCell
-            contoller.delegates[self.rawValue] = casted
             return casted
         case .shoes:
             let casted = cell as! ShoesCell
-            contoller.delegates[self.rawValue] = casted
             return casted
         case .cap:
             let casted = cell as! CapCell
-            contoller.delegates[self.rawValue] = casted
             return casted
         case .socks:
             let casted = cell as! SocksCell
-            contoller.delegates[self.rawValue] = casted
             return casted
         case .bag:
             let casted = cell as! BagCell
-            contoller.delegates[self.rawValue] = casted
             return casted
         case .acc:
             let casted = cell as! AccCollectionViewCell
-            contoller.delegates[self.rawValue] = casted
             return casted
         }
     }
+}
+
+enum Notifications {
+    static let newImagePushed = Notification.Name("newImagePushed")
 }

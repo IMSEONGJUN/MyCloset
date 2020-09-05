@@ -19,6 +19,7 @@ class OuterCell: UICollectionViewCell {
     var selectedIndexPath: [IndexPath] = []
     let flowLayout = UICollectionViewFlowLayout()
     lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
+    var token: NSObjectProtocol?
     
     
     // MARK: - Initializer
@@ -31,10 +32,20 @@ class OuterCell: UICollectionViewCell {
         self.setupViews()
         self.setupConstraints()
         fetchImageFromStorage()
+        configureNotification()
     }
     
     deinit {
         print("deinit")
+    }
+    
+    
+    // MARK: - AddObserver to Noti
+    func configureNotification() {
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+            print("outer noti")
+            self?.fetchImageFromStorage()
+        })
     }
     
     
@@ -104,15 +115,6 @@ extension OuterCell: UICollectionViewDataSource {
         cell.backgroundColor = .white
         print("outer reload")
         return cell
-    }
-}
-
-
-// MARK: - MyClosetViewControllerDelegate
-extension OuterCell: MyClosetViewControllerDelegate {
-    func secondReloadRequest() {
-        print("Outer reloaded")
-        self.collectionView.reloadData()
     }
 }
 

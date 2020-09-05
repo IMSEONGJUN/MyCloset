@@ -20,7 +20,7 @@ class APIManager {
         
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
         let ref = storageRef.child("\(category)/")
-        
+         
         ref.listAll { (storageListResult, error) in
             if let error = error {
                 completion(.failure(error))
@@ -32,26 +32,29 @@ class APIManager {
             print("\(category) file count", currentFileCount)
             
             let group = DispatchGroup()
-            (0..<currentFileCount).forEach({
-                let num = $0
-                group.enter()
-                ref.child("\(category)"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                    if let err = error {
-                        completion(.failure(err))
-                        return
+            DispatchQueue.global().async {
+                (0..<currentFileCount).forEach({
+                    let num = $0
+                    group.enter()
+                    ref.child("\(category)"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                        if let err = error {
+                            completion(.failure(err))
+                            return
+                        }
+                        
+                        guard let data = data, let imageFromServer = UIImage(data: data) else { return }
+                        print("Image file: ", imageFromServer)
+                        images.append(imageFromServer)
+                        group.leave()
                     }
-                    
-                    guard let data = data, let imageFromServer = UIImage(data: data) else { return }
-                    print("Image file: ", imageFromServer)
-                    images.append(imageFromServer)
-                    group.leave()
+                    group.wait()
+                })
+                group.notify(queue: .main) {
+                    print("fetched images count: ", images.count)
+                    completion(.success(images))
                 }
-            })
-            group.notify(queue: .main) {
-                print("fetched images count: ", images.count)
-                completion(.success(images))
             }
-        }
+        } 
     }
     
     func uploadImageNotRemovedBackground(image: UIImage, completion: @escaping (Result<String,Error>) -> Void) {
@@ -84,7 +87,6 @@ class APIManager {
         meta.contentType = "image/png"
         let filename = category.name
         let filenum = category.fileCount
-        DataManager.shared.top.updateValue(image, forKey: "\(filename)\(filenum)")
         
         guard let data = image.pngData() else { return }
         let storageRef = Storage.storage().reference().child("items").child("\(filename)/").child("\(filename)" + "\(filenum).png")

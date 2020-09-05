@@ -19,6 +19,8 @@ class BagCell: UICollectionViewCell {
     var selectedIndexPath: [IndexPath] = []
     let flowLayout = UICollectionViewFlowLayout()
     lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
+    var token: NSObjectProtocol?
+    
     
     // MARK: - Initializer
     required init?(coder aDecoder: NSCoder) {
@@ -30,10 +32,20 @@ class BagCell: UICollectionViewCell {
         self.setupViews()
         self.setupConstraints()
         fetchImageFromStorage()
+        configureNotification()
     }
     
     deinit {
         print("deinit")
+    }
+    
+    
+    // MARK: - AddObserver to Noti
+    func configureNotification() {
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+            print("bag noti")
+            self?.fetchImageFromStorage()
+        })
     }
     
     
@@ -103,14 +115,6 @@ extension BagCell: UICollectionViewDataSource {
         cell.backgroundColor = .white
         print("bag reload")
         return cell
-    }
-}
-
-// MARK: - MyClosetViewControllerDelegate
-extension BagCell: MyClosetViewControllerDelegate {
-    func secondReloadRequest() {
-        print("Bag reloaded")
-        self.collectionView.reloadData()
     }
 }
 

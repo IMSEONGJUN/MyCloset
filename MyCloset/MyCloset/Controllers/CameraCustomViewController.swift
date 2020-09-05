@@ -16,9 +16,6 @@ import GoogleSignIn
 import SnapKit
 import AVFoundation
 
-protocol CameraCustomViewControllerDelegate: class {
-    func reloadRequest()
-}
 
 class CameraCustomViewController: UIViewController, AVCapturePhotoCaptureDelegate {
     
@@ -29,8 +26,6 @@ class CameraCustomViewController: UIViewController, AVCapturePhotoCaptureDelegat
         btn.setImage(UIImage(named: "normal"), for: .normal)
         return btn
     }()
-    
-    weak var delegate: CameraCustomViewControllerDelegate?
     
     let takePictureBtn = UIButton()
     let cancelBtn = UIButton()
@@ -201,7 +196,8 @@ class CameraCustomViewController: UIViewController, AVCapturePhotoCaptureDelegat
                 print(error)
                 return
             }
-            self.delegate?.reloadRequest()
+            
+            NotificationCenter.default.post(name: Notifications.newImagePushed, object: nil)
             self.dismiss(animated: true, completion: nil)
         }
     }

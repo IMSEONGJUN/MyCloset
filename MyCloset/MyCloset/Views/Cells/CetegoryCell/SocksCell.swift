@@ -17,12 +17,10 @@ class SocksCell: UICollectionViewCell {
     static let identifier = "SocksCell"
     private let titleLabel = UILabel()
     var selectedIndexPath: [IndexPath] = []
-    
     let flowLayout = UICollectionViewFlowLayout()
+    lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
+    var token: NSObjectProtocol?
     
-    lazy var collectionView = UICollectionView(
-        frame: self.contentView.frame, collectionViewLayout: flowLayout
-    )
     
     // MARK: - Initializer
     required init?(coder aDecoder: NSCoder) {
@@ -34,10 +32,20 @@ class SocksCell: UICollectionViewCell {
         self.setupViews()
         self.setupConstraints()
         fetchImageFromStorage()
+        configureNotification()
     }
     
     deinit {
         print("deinit")
+    }
+    
+    
+    // MARK: - AddObserver to Noti
+    func configureNotification() {
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+            print("socks noti")
+            self?.fetchImageFromStorage()
+        })
     }
     
     
@@ -106,15 +114,6 @@ extension SocksCell: UICollectionViewDataSource {
         cell.backgroundColor = .white
         print("socks reload")
         return cell
-    }
-}
-
-
-// MARK: - MyClosetViewControllerDelegate
-extension SocksCell: MyClosetViewControllerDelegate {
-    func secondReloadRequest() {
-        print("Socks reloaded")
-        self.collectionView.reloadData()
     }
 }
 

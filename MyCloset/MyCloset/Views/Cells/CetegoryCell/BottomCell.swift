@@ -20,6 +20,7 @@ class BottomCell: UICollectionViewCell {
     var selectedIndexPath: [IndexPath] = []
     let flowLayout = UICollectionViewFlowLayout()
     lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
+    var token: NSObjectProtocol?
     
     
     // MARK: - Initializer
@@ -32,10 +33,19 @@ class BottomCell: UICollectionViewCell {
         self.setupViews()
         self.setupConstraints()
         fetchImageFromStorage()
+        configureNotification()
     }
     
     deinit {
         print("deinit")
+    }
+    
+    // MARK: - AddObserver to Noti
+    func configureNotification() {
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+            print("bottom noti")
+            self?.fetchImageFromStorage()
+        })
     }
     
     
@@ -105,15 +115,6 @@ extension BottomCell: UICollectionViewDataSource {
         cell.backgroundColor = .white
         print("bottom reload")
         return cell
-    }
-}
-
-
-// MARK: - MyClosetViewControllerDelegate
-extension BottomCell: MyClosetViewControllerDelegate {
-    func secondReloadRequest() {
-        print("Bottom reloaded")
-        self.collectionView.reloadData()
     }
 }
 

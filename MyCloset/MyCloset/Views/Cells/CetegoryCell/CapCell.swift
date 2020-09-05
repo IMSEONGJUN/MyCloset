@@ -19,6 +19,7 @@ class CapCell: UICollectionViewCell {
     let imageView = UIImageView()
     let flowLayout = UICollectionViewFlowLayout()
     lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
+    var token: NSObjectProtocol?
     
     
     // MARK: - Initializer
@@ -27,6 +28,7 @@ class CapCell: UICollectionViewCell {
         self.setupViews()
         self.setupConstraints()
         fetchImageFromStorage()
+        configureNotification()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -35,6 +37,15 @@ class CapCell: UICollectionViewCell {
     
     deinit {
         print("deinit")
+    }
+    
+    
+    // MARK: - AddObserver to Noti
+    func configureNotification() {
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+            print("cap noti")
+            self?.fetchImageFromStorage()
+        })
     }
     
     
@@ -105,15 +116,6 @@ extension CapCell: UICollectionViewDataSource {
         cell.backgroundColor = .white
         print("cap reload")
         return cell
-    }
-}
-
-
-// MARK: - MyClosetViewControllerDelegate
-extension CapCell: MyClosetViewControllerDelegate {
-    func secondReloadRequest() {
-        print("Cap reloaded")
-        self.collectionView.reloadData()
     }
 }
 

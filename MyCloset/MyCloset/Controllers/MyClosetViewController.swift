@@ -9,18 +9,11 @@
 import UIKit
 import Firebase
 
-protocol MyClosetViewControllerDelegate: class {
-    func secondReloadRequest()
-}
-
 class MyClosetViewController: UIViewController {
     
     // MARK: - Properties
     let addNewClothesButton = UIButton()
     let makeCodiButton = UIButton()
-    
-    var delegates = [MyClosetViewControllerDelegate?](repeating: nil, count: 8)
-    
     let flowLayout = UICollectionViewFlowLayout()
     lazy var collectionView = UICollectionView(frame: view.frame, collectionViewLayout: flowLayout)
 
@@ -113,7 +106,6 @@ class MyClosetViewController: UIViewController {
     // MARK: - Action Handler
     @objc private func didTapAddNewButton() {
         let cameraVC = CameraCustomViewController()
-        cameraVC.delegate = self
         cameraVC.modalPresentationStyle = .fullScreen
         present(cameraVC, animated: true)
     }
@@ -137,14 +129,7 @@ extension MyClosetViewController: UICollectionViewDataSource {
         guard let cellType = CategoryCellType(rawValue: indexPath.item) else { fatalError() }
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellType.cellID, for: indexPath)
-        return cellType.typeCasting(contoller: self, cell: cell)
+        return cellType.typeCasting(cell: cell)
     }
 }
 
-
-// MARK: - CameraCustomViewControllerDelegate
-extension MyClosetViewController: CameraCustomViewControllerDelegate {
-    func reloadRequest() {
-        self.delegates.forEach({$0?.secondReloadRequest()})
-    }
-}

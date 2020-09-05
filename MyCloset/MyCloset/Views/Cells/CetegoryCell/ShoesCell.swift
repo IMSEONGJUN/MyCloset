@@ -20,6 +20,7 @@ class ShoesCell: UICollectionViewCell {
     var selectedIndexPath: [IndexPath] = []
     let flowLayout = UICollectionViewFlowLayout()
     lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
+    var token: NSObjectProtocol?
     
     
     // MARK: - Initializer
@@ -32,10 +33,20 @@ class ShoesCell: UICollectionViewCell {
         self.setupViews()
         self.setupConstraints()
         fetchImageFromStorage()
+        configureNotification()
     }
     
     deinit {
         print("deinit")
+    }
+    
+    
+    // MARK: - AddObserver to Noti
+    func configureNotification() {
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+            print("shoes noti")
+            self?.fetchImageFromStorage()
+        })
     }
     
     
@@ -106,15 +117,6 @@ extension ShoesCell: UICollectionViewDataSource {
         cell.backgroundColor = .white
         print("shoes reload")
         return cell
-    }
-}
-
-
-// MARK: - MyClosetViewControllerDelegate
-extension ShoesCell: MyClosetViewControllerDelegate {
-    func secondReloadRequest() {
-        print("Shoes reloaded")
-        self.collectionView.reloadData()
     }
 }
 

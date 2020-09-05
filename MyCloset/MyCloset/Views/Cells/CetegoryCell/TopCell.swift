@@ -19,6 +19,7 @@ class TopCell: UICollectionViewCell {
     let flowLayout = UICollectionViewFlowLayout()
     let imageView = UIImageView()
     lazy var collectionView = UICollectionView(frame: self.contentView.frame, collectionViewLayout: flowLayout)
+    var token: NSObjectProtocol?
     
     
     // MARK: - Initializer
@@ -31,10 +32,20 @@ class TopCell: UICollectionViewCell {
         self.setupViews()
         self.setupConstraints()
         fetchImageFromStorage()
+        configureNotification()
     }
     
     deinit {
         print("deinit")
+    }
+    
+    
+    // MARK: - AddObserver to Noti
+    func configureNotification() {
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+            print("top noti")
+            self?.fetchImageFromStorage()
+        })
     }
     
     
@@ -105,13 +116,6 @@ extension TopCell: UICollectionViewDataSource {
     }
 }
 
-// MARK: - MyClosetViewControllerDelegate
-extension TopCell: MyClosetViewControllerDelegate {
-    func secondReloadRequest() {
-        print("Top reloaded")
-        self.collectionView.reloadData()
-    }
-}
 
 // MARK: - UICollectionViewDelegate
 extension TopCell: UICollectionViewDelegate {
