@@ -28,32 +28,29 @@ class APIManager {
             }
             
             let currentFileCount = storageListResult.items.count
-            
             print("\(category) file count", currentFileCount)
             
             let group = DispatchGroup()
-            DispatchQueue.global().async {
-                (0..<currentFileCount).forEach({
-                    let num = $0
-                    group.enter()
-                    ref.child("\(category)"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                        if let err = error {
-                            completion(.failure(err))
-                            return
-                        }
-                        
-                        guard let data = data, let imageFromServer = UIImage(data: data) else { return }
-                        print("Image file: ", imageFromServer)
-                        images.updateValue(imageFromServer, forKey: num)
-                        group.leave()
+            (0..<currentFileCount).forEach({
+                let num = $0
+                group.enter()
+                ref.child("\(category)"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                    if let err = error {
+                        completion(.failure(err))
+                        return
                     }
                     
-                })
-                group.notify(queue: .main) {
-                    print("fetched images count: ", images.count)
-                    let sortedImages = images.sorted(by: {$0.0 < $1.0}).map{$0.value}
-                    completion(.success(sortedImages))
+                    guard let data = data, let imageFromServer = UIImage(data: data) else { return }
+                    print("Image file: ", imageFromServer)
+                    images.updateValue(imageFromServer, forKey: num)
+                    group.leave()
                 }
+                
+            })
+            group.notify(queue: .main) {
+                print("fetched images count: ", images.count)
+                let sortedImages = images.sorted(by: {$0.0 < $1.0}).map{$0.value}
+                completion(.success(sortedImages))
             }
         } 
     }
@@ -126,7 +123,7 @@ class APIManager {
                 completion(err)
                 return
             }
-            let uid = user?.user.uid ?? "" //현재 회원의 uid
+            let uid = user?.user.uid ?? ""
             let values = ["userName": email,
                           "email": password,
                           "uid": uid
@@ -150,7 +147,6 @@ class APIManager {
                 completion(error)
                 return
             }
-            
             completion(nil)
         }
         
