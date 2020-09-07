@@ -41,8 +41,34 @@
 		CE38E3B12500F5C500C0A200 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE38E3B02500F5C500C0A200 /* APIManager.swift */; };
 		CE38E3CC250274D700C0A200 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE38E3CB250274D700C0A200 /* GoogleService-Info.plist */; };
 		CE38E3CE2502A27200C0A200 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE38E3CD2502A27200C0A200 /* Helper.swift */; };
+		CE38E3F425049EDC00C0A200 /* SwiftyLRUCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE38E3F325049ECE00C0A200 /* SwiftyLRUCache.framework */; };
+		CE38E3F525049EDC00C0A200 /* SwiftyLRUCache.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE38E3F325049ECE00C0A200 /* SwiftyLRUCache.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CEA138032432041D0017FC10 /* CameraCustomViewController+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA138022432041D0017FC10 /* CameraCustomViewController+Ext.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CE38E3F225049ECE00C0A200 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE38E3EE25049ECE00C0A200 /* SwiftyLRUCache.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CE38E3D92503E68A00C0A200;
+			remoteInfo = SwiftyLRUCache;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CE38E3F625049EDC00C0A200 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CE38E3F525049EDC00C0A200 /* SwiftyLRUCache.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0A1D9375421FC2B1AFBF6B5B /* Pods-MyCloset.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyCloset.release.xcconfig"; path = "Target Support Files/Pods-MyCloset/Pods-MyCloset.release.xcconfig"; sourceTree = "<group>"; };
@@ -82,6 +108,7 @@
 		CE38E3B02500F5C500C0A200 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		CE38E3CB250274D700C0A200 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CE38E3CD2502A27200C0A200 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		CE38E3EE25049ECE00C0A200 /* SwiftyLRUCache.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SwiftyLRUCache.xcodeproj; path = ../../../iosDevelop/myProjects/MyFrameWork/SwiftyLRUCache/SwiftyLRUCache.xcodeproj; sourceTree = "<group>"; };
 		CEA138022432041D0017FC10 /* CameraCustomViewController+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraCustomViewController+Ext.swift"; sourceTree = "<group>"; };
 		DEB4A1A15580D189008B4E10 /* Pods-MyCloset.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyCloset.debug.xcconfig"; path = "Target Support Files/Pods-MyCloset/Pods-MyCloset.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,6 +119,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56A5D4CF1508EEBC5262F237 /* Pods_MyCloset.framework in Frameworks */,
+				CE38E3F425049EDC00C0A200 /* SwiftyLRUCache.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +129,7 @@
 		1578613123E425D900284024 = {
 			isa = PBXGroup;
 			children = (
+				CE38E3EE25049ECE00C0A200 /* SwiftyLRUCache.xcodeproj */,
 				1578613C23E425D900284024 /* MyCloset */,
 				155EE5F023E992030016FB9F /* Assets.xcassets */,
 				1578613B23E425D900284024 /* Products */,
@@ -165,6 +194,14 @@
 				2416F931B4423E5140A285EC /* Pods_MyCloset.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CE38E3EF25049ECE00C0A200 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CE38E3F325049ECE00C0A200 /* SwiftyLRUCache.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		CE822A89242477BD008E5386 /* Controllers */ = {
@@ -260,6 +297,7 @@
 				1578613823E425D900284024 /* Resources */,
 				5CBEEDD124D0A2048C3359B2 /* [CP] Embed Pods Frameworks */,
 				3ED4D0188F58CB5C2F3932BD /* [CP] Copy Pods Resources */,
+				CE38E3F625049EDC00C0A200 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -296,12 +334,28 @@
 			mainGroup = 1578613123E425D900284024;
 			productRefGroup = 1578613B23E425D900284024 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = CE38E3EF25049ECE00C0A200 /* Products */;
+					ProjectRef = CE38E3EE25049ECE00C0A200 /* SwiftyLRUCache.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				1578613923E425D900284024 /* MyCloset */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		CE38E3F325049ECE00C0A200 /* SwiftyLRUCache.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SwiftyLRUCache.framework;
+			remoteRef = CE38E3F225049ECE00C0A200 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1578613823E425D900284024 /* Resources */ = {

@@ -9,15 +9,17 @@
 import Foundation
 import UIKit
 import Firebase
+import SwiftyLRUCache
 
 class APIManager {
     static let shared = APIManager()
-    var cache = NSCache<NSString,UIImage>()
+    
+    var imageLRUCache = SwiftyLRUCache<String, UIImage>(capacity: 50)
+    
     private init() { }
     
     func fetchImageFromFirebase(category: String, completion: @escaping (Result<[UIImage], Error>) -> Void ) {
         var images = [String : UIImage]()
-        cache.countLimit = 50
         let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
         let ref = storageRef.child("\(category)/")
          
@@ -34,8 +36,7 @@ class APIManager {
             (0..<currentFileCount).forEach({
                 let num = $0
                 let key = "\(category)"+"\(num)"+".png"
-                let cacheKey = NSString(string: key)
-                if let cachedImage = self.cache.object(forKey: cacheKey) {
+                if let cachedImage = self.imageLRUCache.getValue(forKey: key) {
                     images.updateValue(cachedImage, forKey: key)
                     return
                 }
@@ -50,7 +51,7 @@ class APIManager {
                     guard let data = data, let imageFromServer = UIImage(data: data) else { return }
                     print("Image file: ", imageFromServer)
                     images.updateValue(imageFromServer, forKey: key)
-                    self.cache.setObject(imageFromServer, forKey: cacheKey)
+                    self.imageLRUCache.setValue(value: imageFromServer, forKey: key)
                     group.leave()
                 }
             })
@@ -149,7 +150,7 @@ class APIManager {
     }
     
     func login(email: String, password: String, completion: @escaping (Error?) -> Void) {
-        guard email.contains("@") == true && email.contains(".") == true && password.count >= 6 else { return }
+        guard isValidEmailAddress(email: email) && password.count >= 6 else { return }
         Auth.auth().signIn(withEmail: email, password: password) { (_, error) in
             if let error = error {
                 completion(error)
@@ -158,5 +159,11 @@ class APIManager {
             completion(nil)
         }
         
+    }
+    
+    func isValidEmailAddress(email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailTest.evaluate(with: email)
     }
 }
