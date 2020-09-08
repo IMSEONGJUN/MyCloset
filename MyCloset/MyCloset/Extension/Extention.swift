@@ -29,6 +29,7 @@ extension UIView {
         }
     }
 }
+
 extension UIViewController {
     func switchingView() {
         if #available(iOS 13.0, *) {
@@ -82,6 +83,7 @@ extension UIViewController {
         }
     }
 }
+
 extension TitleCell {
     func drawLine() {
         let doYourPath = UIBezierPath(rect: CGRect(x: 30, y: self.frame.height * 0.7, width: 240, height: 7))
