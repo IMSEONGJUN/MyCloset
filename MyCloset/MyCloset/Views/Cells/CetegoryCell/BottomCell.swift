@@ -37,7 +37,9 @@ class BottomCell: UICollectionViewCell {
     }
     
     deinit {
-        print("deinit")
+        if let token = token {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
     
     // MARK: - AddObserver to Noti

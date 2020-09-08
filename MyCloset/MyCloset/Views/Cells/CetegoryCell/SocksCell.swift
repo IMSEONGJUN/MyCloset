@@ -36,7 +36,9 @@ class SocksCell: UICollectionViewCell {
     }
     
     deinit {
-        print("deinit")
+        if let token = token {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
     
     

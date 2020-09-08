@@ -25,8 +25,6 @@ class PrevCodiViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         title = "Previous CodiSet"
         configureCollection()
-        
-        
         refreshControl.tintColor = .blue
         refreshControl.attributedTitle = NSAttributedString(string: "Refreshing...")
         refreshControl.addTarget(self, action: #selector(reloadData), for: .valueChanged)
