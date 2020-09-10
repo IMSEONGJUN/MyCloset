@@ -60,37 +60,16 @@ class PrevCodiViewController: UIViewController {
     
     // MARK: - API Service
     func fetchImageFromStorage() {
-        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com")
-        let codiRef = storageRef.child("codiSet/")
-        var fileCount = 0
-
-        codiRef.listAll { (StorageListResult, Error) in
-            if Error == nil {
-                fileCount = StorageListResult.items.count
-                guard fileCount > 0 else {
-                    return
-                }
-                for i in 1...fileCount {
-                    self.setCodiFile(ref: codiRef, num: i)
-                }
-            }
-        }
-    }
-    
-    func setCodiFile(ref: StorageReference, num: Int) {
-        ref.child("codiSet"+"\(num)"+".jpeg").getData(maxSize: 1 * 1024 * 1024) { (data, error) in
-            if let err = error {
-                print(err)
+        APIManager.shared.fetchPrevCodiImages { (error) in
+            guard error == nil else {
+                print(error?.localizedDescription ?? "")
                 return
             }
-            
-            guard let imageFromServer = UIImage(data: data!) else { return }
-            DataManager.shared.codiImages.updateValue(imageFromServer, forKey: "codiSet"+"\(num)"+".jpeg")
             self.prevCodiData = DataManager.shared.codiImages
             self.collection.reloadData()
         }
     }
-    
+
     
     // MARK: - Action Handler
     @objc func reloadData() {
@@ -113,10 +92,15 @@ extension PrevCodiViewController: UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CellID", for: indexPath)
-        guard !DataManager.shared.codiImages.isEmpty else { return cell }
+        configureCell(cell: cell, indexPath: indexPath)
+        return cell
+    }
+    
+    func configureCell(cell: UICollectionViewCell, indexPath: IndexPath) {
+        guard !DataManager.shared.codiImages.isEmpty else { return }
         var imageArray: [UIImage] = []
-        for key in self.prevCodiData.sorted(by: {$0.0 > $1.0}) {
-            imageArray.append(key.value)
+        for dict in self.prevCodiData.sorted(by: {$0.0 > $1.0}) {
+            imageArray.append(dict.value)
         }
         let imageView = UIImageView(image: imageArray[indexPath.item])
         imageView.frame = cell.contentView.frame
@@ -125,6 +109,5 @@ extension PrevCodiViewController: UICollectionViewDataSource{
         cell.layer.borderColor = UIColor.darkGray.cgColor
         cell.layer.cornerRadius = 20
         cell.clipsToBounds = true
-        return cell
     }
 }

@@ -14,55 +14,12 @@ import SwiftyLRUCache
 class APIManager {
     static let shared = APIManager()
     
-    var imageLRUCache = SwiftyLRUCache<String, UIImage>(capacity: 50)
+    let baseURL = "gs://myclosetnew-2f1ef.appspot.com"
+    
+    let itemImageCache = SwiftyLRUCache<String, UIImage>(capacity: 50)
+    let codiImagesCache = SwiftyLRUCache<String, UIImage>(capacity: 20)
     
     private init() { }
-    
-    func fetchImageFromFirebase(category: String, completion: @escaping (Result<[UIImage], Error>) -> Void ) {
-        var images = [String : UIImage]()
-        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com").child("items/")
-        let ref = storageRef.child("\(category)/")
-         
-        ref.listAll { (storageListResult, error) in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            
-            let currentFileCount = storageListResult.items.count
-            print("\(category) file count", currentFileCount)
-            
-            let group = DispatchGroup()
-            (0..<currentFileCount).forEach({
-                let num = $0
-                let key = "\(category)"+"\(num)"+".png"
-                if let cachedImage = self.imageLRUCache.getValue(forKey: key) {
-                    images.updateValue(cachedImage, forKey: key)
-                    return
-                }
-                
-                group.enter()
-                ref.child("\(category)"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
-                    if let err = error {
-                        completion(.failure(err))
-                        return
-                    }
-                    
-                    guard let data = data, let imageFromServer = UIImage(data: data) else { return }
-                    print("Image file: ", imageFromServer)
-                    images.updateValue(imageFromServer, forKey: key)
-                    self.imageLRUCache.setValue(value: imageFromServer, forKey: key)
-                    group.leave()
-                }
-            })
-            
-            group.notify(queue: .main) {
-                print("fetched images count: ", images.count)
-                let sortedImages = images.sorted(by: {$0.0 < $1.0}).map{$0.value}
-                completion(.success(sortedImages))
-            }
-        } 
-    }
     
     func uploadImageNotRemovedBackground(image: UIImage, completion: @escaping (Result<String,Error>) -> Void) {
         let meta = StorageMetadata()
@@ -89,14 +46,16 @@ class APIManager {
         }
     }
     
-    func uploadImageRemovedBackground(image: UIImage, category: CategoryButtonType, completion: @escaping (Error?) -> Void) {
+    func uploadImageRemovedBackground(image: UIImage, category: CategoryButtonType,
+                                      completion: @escaping (Error?) -> Void) {
         let meta = StorageMetadata()
         meta.contentType = "image/png"
         let filename = category.name
         let filenum = category.fileCount
         
         guard let data = image.pngData() else { return }
-        let storageRef = Storage.storage().reference().child("items").child("\(filename)/").child("\(filename)" + "\(filenum).png")
+        let storageRef = Storage.storage().reference().child("items")
+                                .child("\(filename)/").child("\(filename)" + "\(filenum).png")
         
         storageRef.putData(data, metadata: meta) { (_, error) in
             if error == nil {
@@ -108,7 +67,7 @@ class APIManager {
     func uploadCodiSet(data: Data, completion: @escaping (Error?) -> Void) {
         let meta = StorageMetadata()
         meta.contentType = "image/jpeg"
-        let storageRef = Storage.storage().reference(forURL: "gs://myclosetnew-2f1ef.appspot.com")
+        let storageRef = Storage.storage().reference(forURL: baseURL)
         let codiRef = storageRef.child("codiSet/")
         
         codiRef.listAll { (StorageListResult, Error) in
@@ -125,8 +84,103 @@ class APIManager {
         }
     }
     
+    func fetchPrevCodiImages(completion: @escaping (Error?) -> Void) {
+        let storageRef = Storage.storage().reference(forURL: baseURL)
+        let codiRef = storageRef.child("codiSet/")
+        var fileCount = 0
+
+        codiRef.listAll { (storageListResult, error) in
+            guard error == nil else { return }
+            
+            fileCount = storageListResult.items.count
+            guard fileCount > 0 else { return }
+            
+            let group = DispatchGroup()
+            for i in 1...fileCount {
+                group.enter()
+                self.setCodiFile(ref: codiRef, num: i) { error in
+                    if let error = error {
+                        print("failed to fetch a single codi image: codi Number: \(i)", error)
+                    }
+                    group.leave()
+                }
+            }
+            group.notify(queue: .main) {
+                completion(nil)
+            }
+        }
+    }
+    
+    func setCodiFile(ref: StorageReference, num: Int, completion: @escaping (Error?) -> Void) {
+        let key = "codiSet"+"\(num)"+".jpeg"
+        if let cachedImage = codiImagesCache.getValue(forKey: key) {
+            DataManager.shared.codiImages.updateValue(cachedImage, forKey: key)
+            return
+        }
+        
+        ref.child("codiSet"+"\(num)"+".jpeg").getData(maxSize: 1 * 1024 * 1024) { (data, error) in
+            if let err = error {
+                print(err)
+                completion(err)
+                return
+            }
+            guard let imageFromServer = UIImage(data: data!) else { return }
+            DataManager.shared.codiImages.updateValue(imageFromServer, forKey: key)
+            self.codiImagesCache.setValue(value: imageFromServer, forKey: key)
+            completion(nil)
+        }
+    }
+    
+    func fetchImageFromFirebase(category: String, completion: @escaping (Result<[UIImage], Error>) -> Void ) {
+        var images = [String : UIImage]()
+        let storageRef = Storage.storage().reference(forURL: baseURL).child("items/")
+        let ref = storageRef.child("\(category)/")
+         
+        ref.listAll { (storageListResult, error) in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            let currentFileCount = storageListResult.items.count
+            print("\(category) file count", currentFileCount)
+            
+            let group = DispatchGroup()
+            DispatchQueue.concurrentPerform(iterations: currentFileCount) { (num) in
+                print("Dispatch Concurrent Perform iteration count: \(category) : ",num)
+                print("Thread Check: ", Thread.isMainThread)
+                let key = "\(category)"+"\(num)"+".png"
+                if let cachedImage = self.itemImageCache.getValue(forKey: key) {
+                    images.updateValue(cachedImage, forKey: key)
+                    return
+                }
+                
+                group.enter()
+                ref.child("\(category)"+"\(num)"+".png").getData(maxSize: 9024 * 9024) { (data, error) in
+                    if let err = error {
+                        completion(.failure(err))
+                        return
+                    }
+                    
+                    guard let data = data, let imageFromServer = UIImage(data: data) else { return }
+                    print("Image file: ", imageFromServer)
+                    images.updateValue(imageFromServer, forKey: key)
+                    self.itemImageCache.setValue(value: imageFromServer, forKey: key)
+                    print("Dispatch Concurrent Perform iteration END: \(category) : ",num)
+                    group.leave()
+                }
+            }
+            
+            group.notify(queue: .main) {
+                print("fetched images count: ", images.count)
+                let sortedImages = images.sorted(by: {$0.0 < $1.0}).map{$0.value}
+                completion(.success(sortedImages))
+            }
+        } 
+    }
+
     func signUp(email: String, password: String, completion: @escaping (Error?) -> Void) {
-        guard email.contains("@") == true && email.contains(".") == true && password.count >= 6 else { return }
+        guard isValidEmailAddress(email: email) && password.count >= 6 else { return }
         Auth.auth().createUser(withEmail: email, password: password) { (user, err) in
             if let err = err {
                 completion(err)
