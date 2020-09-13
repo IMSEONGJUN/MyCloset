@@ -9,7 +9,8 @@
 import UIKit
 
 protocol PinterLayoutDelegate: class {
-    func collectionView(_ collectionView: UICollectionView, numberOfColumn: Int, heightForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat
+    func collectionView(_ collectionView: UICollectionView, numberOfColumn: Int,
+                        heightForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat
 }
 
 class PinterLayout: UICollectionViewFlowLayout {
@@ -24,7 +25,7 @@ class PinterLayout: UICollectionViewFlowLayout {
     
     private var contentHeight: CGFloat = 0
     private var contentWidth: CGFloat {
-        guard let collectionView = collectionView else {return 0.0}
+        guard let collectionView = collectionView else { return 0.0 }
         let insets = collectionView.contentInset
         return collectionView.bounds.width - (insets.left + insets.right)
     }
@@ -70,9 +71,15 @@ class PinterLayout: UICollectionViewFlowLayout {
         
         for item in 2 ..< collection.numberOfItems(inSection: 0) {
             let indexPath = IndexPath(item: item, section: 0)
-            photoHeight = delegate.collectionView(collection, numberOfColumn: numberOfColumns, heightForPhotoAtIndexPath: indexPath)
+            photoHeight = delegate.collectionView(collection,
+                                                  numberOfColumn: numberOfColumns,
+                                                  heightForPhotoAtIndexPath: indexPath)
             
-            let frame = CGRect(x: xOffset[columnToPlacePhoto], y: yOffset[columnToPlacePhoto], width: columnWidth, height: photoHeight)
+            let frame = CGRect(x: xOffset[columnToPlacePhoto],
+                               y: yOffset[columnToPlacePhoto],
+                               width: columnWidth,
+                               height: photoHeight)
+            
             let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             attributes.frame = frame
             self.cache.append(attributes)
@@ -101,7 +108,11 @@ class PinterLayout: UICollectionViewFlowLayout {
     }
     
     private func configureTitleView(collection: UICollectionView) {
-        let titleViewframe = CGRect(x: 0, y: collection.bounds.height * 0.6, width: contentWidth, height: collection.bounds.height * 0.1)
+        let titleViewframe = CGRect(x: 0,
+                                    y: collection.bounds.height * 0.6,
+                                    width: contentWidth,
+                                    height: collection.bounds.height * 0.1)
+        
         let attributes = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: 1, section: 0))
         attributes.frame = titleViewframe
         self.cache.append(attributes)

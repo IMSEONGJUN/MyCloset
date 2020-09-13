@@ -44,7 +44,8 @@ class TopCell: UICollectionViewCell {
     
     // MARK: - AddObserver to Noti
     func configureNotification() {
-        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed,
+                                                       object: nil, queue: .main, using: { [weak self] noti in
             print("top noti")
             self?.fetchImageFromStorage()
         })
@@ -110,8 +111,9 @@ extension TopCell: UICollectionViewDataSource {
         return DataManager.shared.top.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier,
+                                                      for: indexPath) as! MyClosetInnerCollectionViewCell
         cell.configure(image: DataManager.shared.top["top"+"\(indexPath.item)"])
         cell.backgroundColor = .white
         print("top reload")

@@ -45,7 +45,8 @@ class ShoesCell: UICollectionViewCell {
     
     // MARK: - AddObserver to Noti
     func configureNotification() {
-        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed,
+                                                       object: nil, queue: .main, using: { [weak self] noti in
             print("shoes noti")
             self?.fetchImageFromStorage()
         })
@@ -113,8 +114,9 @@ extension ShoesCell: UICollectionViewDataSource {
         return DataManager.shared.shoes.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier,
+                                                      for: indexPath) as! MyClosetInnerCollectionViewCell
         
         cell.configure(image: DataManager.shared.shoes["shoes"+"\(indexPath.item)"])
         cell.backgroundColor = .white

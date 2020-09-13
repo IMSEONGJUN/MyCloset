@@ -99,7 +99,8 @@ class MainScrollViewCell: UICollectionViewCell {
         pageControlView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 80).isActive = true
         pageControlView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -50).isActive = true
         pageControlView.heightAnchor.constraint(equalToConstant: 3).isActive = true
-        pageControlViewWidthConst = pageControlView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 0.1)
+        pageControlViewWidthConst = pageControlView.widthAnchor.constraint(equalTo: scrollView.widthAnchor,
+                                                                           multiplier: 0.1)
         pageControlViewWidthConst.isActive = true
         
         imageView1.snp.makeConstraints {

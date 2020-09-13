@@ -44,7 +44,8 @@ class CapCell: UICollectionViewCell {
     
     // MARK: - AddObserver to Noti
     func configureNotification() {
-        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed,
+                                                       object: nil, queue: .main, using: { [weak self] noti in
             print("cap noti")
             self?.fetchImageFromStorage()
         })
@@ -112,8 +113,9 @@ extension CapCell: UICollectionViewDataSource {
         return DataManager.shared.cap.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier,
+                                                      for: indexPath) as! MyClosetInnerCollectionViewCell
         
         cell.configure(image: DataManager.shared.cap["cap"+"\(indexPath.item)"])
         cell.backgroundColor = .white

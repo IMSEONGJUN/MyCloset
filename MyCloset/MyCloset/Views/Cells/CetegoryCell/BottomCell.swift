@@ -44,7 +44,8 @@ class BottomCell: UICollectionViewCell {
     
     // MARK: - AddObserver to Noti
     func configureNotification() {
-        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed, object: nil, queue: .main, using: { [weak self] noti in
+        token = NotificationCenter.default.addObserver(forName: Notifications.newImagePushed,
+                                                       object: nil, queue: .main, using: { [weak self] noti in
             print("bottom noti")
             self?.fetchImageFromStorage()
         })
@@ -111,8 +112,9 @@ extension BottomCell: UICollectionViewDataSource {
         return DataManager.shared.bottom.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier, for: indexPath) as! MyClosetInnerCollectionViewCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyClosetInnerCollectionViewCell.identifier,
+                                                      for: indexPath) as! MyClosetInnerCollectionViewCell
         
         cell.configure(image: DataManager.shared.bottom["bottom"+"\(indexPath.item)"])
         cell.backgroundColor = .white
