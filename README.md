@@ -1,5 +1,7 @@
 # MyCloset<img src = "https://github.com/IMSEONGJUN/MyCloset/blob/master/MyCloset/Assets.xcassets/AppIcon.appiconset/Icon-1024.png?raw=true" width = 50 align = right>
 >-First Hackathon project
+## Period
+- 2020.01.31 ~ 2020.02.20
 ## Concept
 ### Video Link : https://youtu.be/M63XVJaO8nk
 
