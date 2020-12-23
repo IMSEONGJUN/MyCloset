@@ -9,7 +9,6 @@
 
 
 ## Features 
-
 - User's closet management function
 - You can Check out the latest style images
 - You can check what's in my closet with the app
