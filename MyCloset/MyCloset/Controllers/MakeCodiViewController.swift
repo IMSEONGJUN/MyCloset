@@ -102,9 +102,9 @@ class MakeCodiViewController: UIViewController {
     
     private func configureImageViews() {
         imageViews = [capView,outerView,topView,bottomView,shoesView,bagView,accView,socksView]
-        imageViews.forEach{containerImageView.addSubview($0)}
-        imageViews.forEach{containerImageView.bringSubviewToFront($0)}
-        imageViews.forEach{
+        imageViews.forEach { containerImageView.addSubview($0) }
+        imageViews.forEach { containerImageView.bringSubviewToFront($0) }
+        imageViews.forEach {
             $0.backgroundColor = UIColor(named: "codiBackground")
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.contentMode = .scaleAspectFit
@@ -114,7 +114,6 @@ class MakeCodiViewController: UIViewController {
     private func configure() {
         view.addSubview(containerImageView)
         containerImageView.image = UIImage(named: "codiset")
-        
     }
     
     private func setConstraints() {
@@ -181,7 +180,7 @@ class MakeCodiViewController: UIViewController {
     
     
     // MARK: - Action Handler
-    @objc private  func didTapMakeButton() {
+    @objc private func didTapMakeButton() {
         let image = containerImageView.asImage()
         guard let data = image.jpegData(compressionQuality: 0.1) else { return }
         APIManager.shared.uploadCodiSet(data: data) { [weak self] error in

@@ -60,7 +60,7 @@ class MainViewController: UIViewController {
     }
     
     private func configureCollectionView() {
-        let layout = PinterLayout(numberOfColumns: 2, initialYoffset: view.frame.height)
+        let layout = PinterLayout(numberOfColumns: 2, initialYoffset: view.frame.minY)
         layout.delegate = self
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
@@ -92,6 +92,7 @@ extension MainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
             return data.count + 2
     }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.item == 0 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainScrollViewCell.identifier, for: indexPath) as! MainScrollViewCell
@@ -118,6 +119,7 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
         dv.set(image: UIImage(named: self.data[indexPath.item - 2])!)
         navigationController?.pushViewController(dv, animated: true)
     }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y > 200 {
             self.weatherButton.tintColor = UIColor(named: "KeyColor")

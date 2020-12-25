@@ -212,7 +212,6 @@ class APIManager {
             }
             completion(nil)
         }
-        
     }
     
     func isValidEmailAddress(email: String) -> Bool {
