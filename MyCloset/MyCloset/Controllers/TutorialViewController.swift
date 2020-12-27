@@ -177,9 +177,6 @@ class TutorialViewController: UIViewController {
         case skipButton:
             scrollView.contentOffset.x = scrollView.frame.width * 4
             pageController.currentPage = 4
-            self.skipButton.isHidden = true
-            self.nextButton.isHidden = true
-            self.signUpButton.isHidden = false
         case signUpButton:
             let svc = SignUpViewController()
             present(svc, animated: true)
@@ -187,11 +184,12 @@ class TutorialViewController: UIViewController {
             guard scrollView.contentOffset.x != scrollView.frame.width * 4 else {return}
             scrollView.contentOffset.x += scrollView.frame.width
             pageController.currentPage += 1
-            if pageController.currentPage == 4 {
-                self.skipButton.isHidden = true
-                self.nextButton.isHidden = true
-                self.signUpButton.isHidden = false
-            }
+        }
+        
+        if pageController.currentPage == 4 {
+            self.skipButton.isHidden = true
+            self.nextButton.isHidden = true
+            self.signUpButton.isHidden = false
         }
     }
     
