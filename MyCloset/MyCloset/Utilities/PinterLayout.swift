@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol PinterLayoutDelegate: class {
+protocol PinterLayoutDelegate: AnyObject {
     func collectionView(_ collectionView: UICollectionView, numberOfColumn: Int,
                         heightForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat
 }
