@@ -20,7 +20,7 @@
 
 ## Third party Libraries
 
-- Google Firebase
+- Google Firebase Firestore
 - SnapKit
 
 ## API Help
